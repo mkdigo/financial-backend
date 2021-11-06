@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\SubgroupController;
 
 /*
@@ -26,6 +27,11 @@ Route::middleware('auth:sanctum')->group(function() {
 
   Route::get('/groups', [GroupController::class, 'index']);
   Route::get('/subgroups', [SubgroupController::class, 'index']);
+
+  Route::get('/accounts', [AccountController::class, 'index']);
+  Route::post('/accounts', [AccountController::class, 'store']);
+  Route::put('/accounts/{id}', [AccountController::class, 'update']);
+  Route::delete('/accounts/{id}', [AccountController::class, 'delete']);
 
   Route::post('/users', [UserController::class, 'store']);
 });

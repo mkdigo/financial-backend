@@ -2,17 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\SubGroup;
+use App\Models\Account;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class SubGroupFactory extends Factory
+class AccountFactory extends Factory
 {
   /**
   * The name of the factory's corresponding model.
   *
   * @var string
   */
-  protected $model = SubGroup::class;
+  protected $model = Account::class;
 
   /**
   * Define the model's default state.
@@ -22,6 +22,8 @@ class SubGroupFactory extends Factory
   public function definition()
   {
     return [
+      'group_id' => $this->faker->numberBetween(1, 30),
+      'subgroup_id' => $this->faker->numberBetween(1, 30),
       'name' => $this->faker->word(),
       'description' => $this->faker->sentence(),
     ];

@@ -2,27 +2,29 @@
 
 namespace App\Models;
 
-use App\Models\Account;
+use App\Models\Group;
 use App\Models\Subgroup;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Group extends Model
+class Account extends Model
 {
   use HasFactory;
 
   protected $fillable = [
+    'group_id',
+    'subgroup_id',
     'name',
     'description',
   ];
 
-  public function subgroups()
+  public function group()
   {
-    return $this->hasMany(Subgroup::class);
+    return $this->belongsTo(Group::class);
   }
 
-  public function accounts()
+  public function subgroup()
   {
-    return $this->hasMany(Account::class);
+    return $this->belongsTo(Subgroup::class);
   }
 }

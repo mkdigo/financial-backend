@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSubGroupsTable extends Migration
+class CreateAccountsTable extends Migration
 {
   /**
   * Run the migrations.
@@ -15,80 +15,114 @@ class CreateSubGroupsTable extends Migration
   */
   public function up()
   {
-    Schema::create('subgroups', function (Blueprint $table) {
+    Schema::create('accounts', function (Blueprint $table) {
       $table->id();
       $table->unsignedBigInteger('group_id');
+      $table->unsignedBigInteger('subgroup_id');
       $table->string('name')->unique();
       $table->longText('description')->nullable();
       $table->timestamps();
 
       $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
+      $table->foreign('subgroup_id')->references('id')->on('subgroups')->onDelete('cascade');
     });
 
-    DB::table('subgroups')->insert([
+    DB::table('accounts')->insert([
       [
         'group_id' => 1,
-        'name' => 'current_assets',
+        'subgroup_id' => 1,
+        'name' => 'Caixa',
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),
       ],
       [
         'group_id' => 1,
-        'name' => 'long_term_assets',
+        'subgroup_id' => 1,
+        'name' => 'Banco',
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),
       ],
       [
         'group_id' => 1,
-        'name' => 'property',
-        'created_at' => Carbon::now()->toDateTimeString(),
-        'updated_at' => Carbon::now()->toDateTimeString(),
-      ],
-      [
-        'group_id' => 1,
-        'name' => 'other_assets',
+        'subgroup_id' => 1,
+        'name' => 'Contas a receber',
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),
       ],
       [
         'group_id' => 2,
-        'name' => 'current_liabilities',
-        'created_at' => Carbon::now()->toDateTimeString(),
-        'updated_at' => Carbon::now()->toDateTimeString(),
-      ],
-      [
-        'group_id' => 2,
-        'name' => 'long_term_liabilities',
-        'created_at' => Carbon::now()->toDateTimeString(),
-        'updated_at' => Carbon::now()->toDateTimeString(),
-      ],
-      [
-        'group_id' => 2,
-        'name' => 'other_liabilities',
+        'subgroup_id' => 5,
+        'name' => 'Contas a pagar',
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),
       ],
       [
         'group_id' => 3,
-        'name' => 'equity',
+        'subgroup_id' => 8,
+        'name' => 'Capital Social',
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString(),
+      ],
+      [
+        'group_id' => 3,
+        'subgroup_id' => 8,
+        'name' => 'Lucros Acumulados',
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),
       ],
       [
         'group_id' => 4,
-        'name' => 'revenues',
+        'subgroup_id' => 9,
+        'name' => 'Receitas',
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),
       ],
       [
         'group_id' => 4,
-        'name' => 'expenses',
+        'subgroup_id' => 10,
+        'name' => 'Aluguel',
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),
       ],
       [
         'group_id' => 4,
-        'name' => 'tax',
+        'subgroup_id' => 10,
+        'name' => 'Agua',
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString(),
+      ],
+      [
+        'group_id' => 4,
+        'subgroup_id' => 10,
+        'name' => 'Energia',
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString(),
+      ],
+      [
+        'group_id' => 4,
+        'subgroup_id' => 10,
+        'name' => 'Gás',
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString(),
+      ],
+      [
+        'group_id' => 4,
+        'subgroup_id' => 10,
+        'name' => 'Seguro Automóveis',
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString(),
+      ],
+      [
+        'group_id' => 4,
+        'subgroup_id' => 10,
+        'name' => 'Seguro Saúde',
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString(),
+      ],
+      [
+        'group_id' => 4,
+        'subgroup_id' => 11,
+        'name' => 'Impostos',
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),
       ],
@@ -102,6 +136,6 @@ class CreateSubGroupsTable extends Migration
   */
   public function down()
   {
-    Schema::dropIfExists('subgroups');
+    Schema::dropIfExists('accounts');
   }
 }

@@ -49,8 +49,9 @@ class AccountServices {
 
     if($validator->fails()) return ResponseHelper::validatorErrors($validator);
 
-    $accounts = Account::
-      when(isset($data['group_id']), fn ($query) => $query->where('group_id', $data['group_id']))
+    $accounts = Account::where('name', 'like', '%'.$data['search'].'%')
+      ->when(isset($data['group_id']), fn ($query) => $query->where('group_id', $data['group_id']))
+      ->when(isset($data['subgroup_id']), fn ($query) => $query->where('subgroup_id', $data['subgroup_id']))
       ->orderBy('name')
       ->get();
 

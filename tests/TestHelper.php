@@ -42,7 +42,7 @@ class TestHelper extends TestCase {
     return [$expected, $whereAllType];
   }
 
-  protected function errorResponse($response, $code)
+  protected function assertResponseError($response, $code)
   {
     $response->assertStatus($code)
       ->assertJson(fn (AssertableJson $json) =>

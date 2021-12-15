@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Services;
+namespace App\Repositories;
 
+use App\Helpers\Helper;
 use App\Models\Account;
-use Illuminate\Http\Request;
-use App\Helpers\ResponseHelper;
 use Illuminate\Validation\Rule;
+use App\Exceptions\ExceptionHandler;
 use Illuminate\Support\Facades\Validator;
+use App\Repositories\AccountRepositoryInterface;
 
-class AccountServices {
-  public static function validator(Request $request, $accountId = null)
+class AccountRepository implements AccountRepositoryInterface
+{
+  private function validator($accountId = null)
   {
-    $data = $request->only(
+    $data = request()->only(
       'group_id',
       'subgroup_id',
       'name',
@@ -31,13 +33,17 @@ class AccountServices {
     }
 
     $validator = Validator::make($data, $rules);
+    if($validator->fails()) {
+      [$fields, $errors] = Helper::validatorErrors($validator);
+      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
+    }
 
-    return [$data, $validator];
+    return $data;
   }
 
-  public static function list(Request $request)
+  public function get()
   {
-    $data = $request->only('group_id', 'subgroup_id', 'search');
+    $data = request()->only('group_id', 'subgroup_id', 'search');
 
     $rules = [
       'group_id' => 'nullable|integer',
@@ -47,7 +53,10 @@ class AccountServices {
 
     $validator = Validator::make($data, $rules);
 
-    if($validator->fails()) return ResponseHelper::validatorErrors($validator);
+    if($validator->fails()) {
+      [$fields, $errors] = Helper::validatorErrors($validator);
+      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
+    }
 
     $accounts = Account::when(isset($data['search']), fn ($query) =>
       $query->where('name', 'like', '%'.$data['search'].'%')
@@ -60,30 +69,34 @@ class AccountServices {
     return $accounts;
   }
 
-  public static function store(Request $request)
+  public function store()
   {
-    [$data, $validator] = AccountServices::validator($request);
-
-    if($validator->fails()) return ResponseHelper::validatorErrors($validator);
+    $data = $this->validator();
 
     $account = Account::create($data);
 
     return $account;
   }
 
-  public static function update(Request $request, Account $account)
+  public function update(int $id)
   {
-    [$data, $validator] = AccountServices::validator($request, $account->id);
+    $account = Account::find($id);
 
-    if($validator->fails()) return ResponseHelper::validatorErrors($validator);
+    if(!$account) throw new ExceptionHandler('Account not found.', 404);
+
+    $data = $this->validator($account->id);
 
     $account->update($data);
 
     return $account;
   }
 
-  public static function delete(Account $account)
+  public function delete(int $id)
   {
+    $account = Account::find($id);
+
+    if(!$account) throw new ExceptionHandler('Account not found.', 404);
+
     $account->delete();
 
     return true;

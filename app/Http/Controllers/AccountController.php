@@ -2,97 +2,76 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use App\Models\Account;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
 use App\Services\AccountServices;
+use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\AccountResource;
+use App\Repositories\AccountRepositoryInterface;
 
 class AccountController extends Controller
 {
+  private $repository;
+
+  public function __construct(AccountRepositoryInterface $repository)
+  {
+    $this->repository = $repository;
+  }
+
   public function index(Request $request)
   {
     try {
-      $response = AccountServices::list($request);
-
-      if($response instanceof \Illuminate\Http\JsonResponse) return $response;
+      $response = $this->repository->get();
 
       return response()->json([
         'success' => true,
         'accounts' => AccountResource::collection($response),
       ]);
-    }
-    catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
   public function store(Request $request)
   {
     try {
-      $response = AccountServices::store($request);
-
-      if($response instanceof \Illuminate\Http\JsonResponse) return $response;
+      $response = $this->repository->store();
 
       return response()->json([
         'success' => true,
         'account' => new AccountResource($response),
       ], 201);
-    }
-    catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
   public function update(Request $request, $id)
   {
     try {
-      $account = Account::find($id);
-
-      if(!$account) return ResponseHelper::notFound('Account not found.');
-
-      $response = AccountServices::update($request, $account);
-
-      if($response instanceof \Illuminate\Http\JsonResponse) return $response;
+      $response = $this->repository->update((int) $id);
 
       return response()->json([
         'success' => true,
         'account' => new AccountResource($response),
       ]);
-    }
-    catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
   public function destroy($id)
   {
     try {
-      $account = Account::find($id);
-
-      if(!$account) return ResponseHelper::notFound('Account not found.');
-
-      if(!AccountServices::delete($account)) throw new Exception('Account delete error.');
+      $this->repository->delete((int) $id);
 
       return response()->json([
         'success' => true,
       ]);
     }
-    catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 }

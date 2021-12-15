@@ -70,7 +70,7 @@ class UserTest extends TestHelper
 
     $response = $this->authRequest('POST', '/api/users', $data);
 
-    $this->errorResponse($response, 400);
+    $this->assertResponseError($response, 400);
   }
 
   public function test_update()
@@ -95,14 +95,14 @@ class UserTest extends TestHelper
 
     $response = $this->authRequest('PUT', '/api/users/1', []);
 
-    $this->errorResponse($response, 400);
+    $this->assertResponseError($response, 400);
   }
 
   public function test_update_user_not_found()
   {
     $response = $this->authRequest('PUT', '/api/users/1000', []);
 
-    $this->errorResponse($response, 404);
+    $this->assertResponseError($response, 404);
   }
 
   public function test_delete()
@@ -119,7 +119,7 @@ class UserTest extends TestHelper
   {
     $response = $this->authRequest('DELETE', '/api/users/1000');
 
-    $this->errorResponse($response, 404);
+    $this->assertResponseError($response, 404);
   }
 
   public function test_change_password()
@@ -143,13 +143,13 @@ class UserTest extends TestHelper
 
     $response = $this->authRequest('PUT', '/api/users/1/changepassword', []);
 
-    $this->errorResponse($response, 400);
+    $this->assertResponseError($response, 400);
   }
 
   public function test_change_password_user_not_found()
   {
     $response = $this->authRequest('PUT', '/api/users/1000/changepassword', []);
 
-    $this->errorResponse($response, 404);
+    $this->assertResponseError($response, 404);
   }
 }

@@ -5,13 +5,14 @@ namespace App\Repositories;
 use App\Models\User;
 use App\Helpers\Helper;
 use Illuminate\Validation\Rule;
-use App\Exceptions\HandlerError;
+use App\Exceptions\ExceptionHandler;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use App\Repositories\UserRepositoryInterface;
 
-class UserRepository implements UserRepositoryInterface {
+class UserRepository implements UserRepositoryInterface
+{
   private function validator(User $user = null)
   {
     $data = request()->only(
@@ -50,7 +51,7 @@ class UserRepository implements UserRepositoryInterface {
     $validator = Validator::make($data, $rules);
     if($validator->fails()) {
       [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new HandlerError(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
+      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
     }
 
     if(!$user) $data['password'] = Hash::make($data['password']);
@@ -77,7 +78,7 @@ class UserRepository implements UserRepositoryInterface {
   public function update(int $id)
   {
     $user = User::find($id);
-    if(!$user) throw new HandlerError('User not found.', 404);
+    if(!$user) throw new ExceptionHandler('User not found.', 404);
 
     $data = $this->validator($user);
     $user->update($data);
@@ -88,7 +89,7 @@ class UserRepository implements UserRepositoryInterface {
   public function changePassword(int $id)
   {
     $user = User::find($id);
-    if(!$user) throw new HandlerError('User not found.', 404);
+    if(!$user) throw new ExceptionHandler('User not found.', 404);
 
     $validateData = request()->only('password', 'password_confirmation');
 
@@ -100,7 +101,7 @@ class UserRepository implements UserRepositoryInterface {
     $validator = Validator::make($validateData, $rules);
     if($validator->fails()) {
       [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new HandlerError(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
+      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
     }
 
     $data['password'] = Hash::make($validateData['password']);
@@ -113,7 +114,7 @@ class UserRepository implements UserRepositoryInterface {
   public function delete(int $id)
   {
     $user = User::find($id);
-    if(!$user) throw new HandlerError('User not found.', 404);
+    if(!$user) throw new ExceptionHandler('User not found.', 404);
 
     $user->delete();
 

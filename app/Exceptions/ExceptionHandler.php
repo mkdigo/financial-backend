@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Throwable;
 
-class HandlerError extends Exception {
+class ExceptionHandler extends Exception {
   private $test;
   private $fields;
   private $errors;

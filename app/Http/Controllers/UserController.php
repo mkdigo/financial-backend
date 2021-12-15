@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Illuminate\Http\Request;
-use App\Services\UserServices;
-use App\Exceptions\HandlerError;
+use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\UserResource;
 use App\Repositories\UserRepositoryInterface;
 
@@ -28,8 +26,8 @@ class UserController extends Controller
         'users' => UserResource::collection($response),
       ]);
 
-    } catch (HandlerError $e) {
-      return $this->handlerCatchException($e);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
@@ -43,8 +41,8 @@ class UserController extends Controller
         'user' => new UserResource($response),
       ], 201);
 
-    } catch (HandlerError $e) {
-      return $this->handlerCatchException($e);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
@@ -58,8 +56,8 @@ class UserController extends Controller
         'user' => new UserResource($response)
       ]);
 
-    } catch (HandlerError $e) {
-      return $this->handlerCatchException($e);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
@@ -72,8 +70,8 @@ class UserController extends Controller
         'success' => true,
       ]);
 
-    } catch (HandlerError $e) {
-      return $this->handlerCatchException($e);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
@@ -86,8 +84,8 @@ class UserController extends Controller
         'success' => true,
       ]);
 
-    } catch (HandlerError $e) {
-      return $this->handlerCatchException($e);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 }

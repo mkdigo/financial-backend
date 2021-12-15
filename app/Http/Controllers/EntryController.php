@@ -2,92 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Entry;
-use Illuminate\Http\Request;
-use App\Helpers\ResponseHelper;
-use App\Services\EntryServices;
+// use Illuminate\Http\Request;
+use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\EntryResource;
+use App\Repositories\EntryRepositoryInterface;
 
 class EntryController extends Controller
 {
-  public function index(Request $request)
+  private $repository;
+
+  public function __construct(EntryRepositoryInterface $repository)
+  {
+    $this->repository = $repository;
+  }
+
+  public function index()
   {
     try{
-      $response = EntryServices::list($request);
-
-      if($response instanceof \Illuminate\Http\JsonResponse) return $response;
+      $response = $this->repository->get();
 
       return response()->json([
         'success' => true,
         'entries' => EntryResource::collection($response),
       ]);
-    } catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
-  public function store(Request $request)
+  public function store()
   {
     try{
-      $response = EntryServices::store($request);
-
-      if($response instanceof \Illuminate\Http\JsonResponse) return $response;
+      $response = $this->repository->store();
 
       return response()->json([
         'success' => true,
         'entry' => new EntryResource($response),
       ], 201);
-    } catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
-  public function update(Request $request, $id)
+  public function update($id)
   {
     try{
-      $entry = Entry::find($id);
-
-      if(!$entry) return ResponseHelper::notFound('Entry not found.');
-
-      $response = EntryServices::update($request, $entry);
-
-      if($response instanceof \Illuminate\Http\JsonResponse) return $response;
+      $response = $this->repository->update((int) $id);
 
       return response()->json([
         'success' => true,
         'entry' => new EntryResource($response),
       ]);
-    } catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
-  public function destroy(Request $request, $id)
+  public function destroy($id)
   {
     try{
-      $entry = Entry::find($id);
-
-      if(!$entry) return ResponseHelper::notFound('Entry not found.');
-
-      if(!EntryServices::delete($entry)) throw new Exception('Entry delete error.');
+      $this->repository->delete((int) $id);
 
       return response()->json([
         'success' => true,
       ]);
-    } catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 }

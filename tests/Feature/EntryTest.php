@@ -64,6 +64,13 @@ class EntryTest extends TestHelper
     );
   }
 
+  public function test_store_bad_request()
+  {
+    $response = $this->authRequest('POST', '/api/entries', []);
+
+    $this->assertResponseError($response, 400);
+  }
+
   public function test_update()
   {
     $this->seed(EntrySeeder::class);
@@ -80,6 +87,24 @@ class EntryTest extends TestHelper
     );
   }
 
+  public function test_update_not_found()
+  {
+    $this->seed(EntrySeeder::class);
+
+    $response = $this->authRequest('PUT', '/api/entries/10000', $this->data);
+
+    $this->assertResponseError($response, 404);
+  }
+
+  public function test_update_bad_request()
+  {
+    $this->seed(EntrySeeder::class);
+
+    $response = $this->authRequest('PUT', '/api/entries/1', []);
+
+    $this->assertResponseError($response, 400);
+  }
+
   public function test_delete()
   {
     $this->seed(EntrySeeder::class);
@@ -87,5 +112,14 @@ class EntryTest extends TestHelper
     $response = $this->authRequest('DELETE', '/api/entries/1');
 
     $response->assertStatus(200);
+  }
+
+  public function test_delete_not_found()
+  {
+    $this->seed(EntrySeeder::class);
+
+    $response = $this->authRequest('DELETE', '/api/entries/10000');
+
+    $this->assertResponseError($response, 404);
   }
 }

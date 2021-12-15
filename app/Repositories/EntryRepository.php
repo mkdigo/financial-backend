@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Services;
+namespace App\Repositories;
 
 use App\Models\Entry;
-use Illuminate\Http\Request;
-use App\Helpers\ResponseHelper;
+use App\Helpers\Helper;
+use App\Exceptions\ExceptionHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
+use App\Repositories\EntryRepositoryInterface;
 
-class EntryServices {
-  public static function validator(Request $request)
+class EntryRepository implements EntryRepositoryInterface
+{
+  private function validator()
   {
-    $data = $request->only(
+    $data = request()->only(
       'inclusion',
       'debit_id',
       'credit_id',
@@ -27,14 +29,18 @@ class EntryServices {
       'note' => 'nullable|string',
     ];
 
-    $validator = Validator($data, $rules);
+    $validator = Validator::make($data, $rules);
+    if($validator->fails()) {
+      [$fields, $errors] = Helper::validatorErrors($validator);
+      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
+    }
 
-    return [$data, $validator];
+    return $data;
   }
 
-  public static function list(Request $request)
+  public function get()
   {
-    $data = $request->only('search');
+    $data = request()->only('search');
 
     $rules = [
       'search' => 'nullable|string',
@@ -42,7 +48,7 @@ class EntryServices {
 
     $validator = Validator::make($data, $rules);
 
-    if($validator->fails()) return ResponseHelper::validatorErrors($validator);
+    if($validator->fails()) throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400);
 
     if(!isset($data['search'])) $data['search'] = '';
 
@@ -60,30 +66,34 @@ class EntryServices {
     return $entries;
   }
 
-  public static function store(Request $request)
+  public function store()
   {
-    [$data, $validator] = EntryServices::validator($request);
-
-    if($validator->fails()) return ResponseHelper::validatorErrors($validator);
+    $data = $this->validator();
 
     $entry = Entry::create($data);
 
     return $entry;
   }
 
-  public static function update(Request $request, Entry $entry)
+  public function update(int $id)
   {
-    [$data, $validator] = EntryServices::validator($request);
+    $entry = Entry::find($id);
 
-    if($validator->fails()) return ResponseHelper::validatorErrors($validator);
+    if(!$entry) throw new ExceptionHandler('Entry not found.', 404);
+
+    $data = $this->validator();
 
     $entry->update($data);
 
     return $entry;
   }
 
-  public static function delete(Entry $entry)
+  public function delete(int $id)
   {
+    $entry = Entry::find($id);
+
+    if(!$entry) throw new ExceptionHandler('Entry not found.', 404);
+
     $entry->delete();
 
     return true;

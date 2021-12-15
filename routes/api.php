@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EntryController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\SubgroupController;
@@ -31,7 +32,16 @@ Route::middleware('auth:sanctum')->group(function() {
   Route::get('/accounts', [AccountController::class, 'index']);
   Route::post('/accounts', [AccountController::class, 'store']);
   Route::put('/accounts/{id}', [AccountController::class, 'update']);
-  Route::delete('/accounts/{id}', [AccountController::class, 'delete']);
+  Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
 
+  Route::get('/entries', [EntryController::class, 'index']);
+  Route::post('/entries', [EntryController::class, 'store']);
+  Route::put('/entries/{id}', [EntryController::class, 'update']);
+  Route::delete('/entries/{id}', [EntryController::class, 'destroy']);
+
+  Route::get('/users', [UserController::class, 'index']);
   Route::post('/users', [UserController::class, 'store']);
+  Route::put('/users/{id}', [UserController::class, 'update']);
+  Route::put('/users/{id}/changepassword', [UserController::class, 'changePassword']);
+  Route::delete('/users/{id}', [UserController::class, 'destroy']);
 });

@@ -3,8 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Database\Seeders\UserSeeder;
-use Database\Seeders\GroupSeeder;
+use Database\Seeders\EntrySeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,8 +15,7 @@ class DatabaseSeeder extends Seeder
   public function run()
   {
     $this->call([
-      UserSeeder::class,
-      GroupSeeder::class,
+      EntrySeeder::class,
     ]);
   }
 }

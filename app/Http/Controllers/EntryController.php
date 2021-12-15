@@ -2,28 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use App\Models\Account;
+use App\Models\Entry;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
-use App\Services\AccountServices;
-use App\Http\Resources\AccountResource;
+use App\Services\EntryServices;
+use App\Http\Resources\EntryResource;
 
-class AccountController extends Controller
+class EntryController extends Controller
 {
   public function index(Request $request)
   {
-    try {
-      $response = AccountServices::list($request);
+    try{
+      $response = EntryServices::list($request);
 
       if($response instanceof \Illuminate\Http\JsonResponse) return $response;
 
       return response()->json([
         'success' => true,
-        'accounts' => AccountResource::collection($response),
+        'entries' => EntryResource::collection($response),
       ]);
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return response()->json([
         'success' => false,
         'message' => $e->getMessage(),
@@ -33,17 +31,16 @@ class AccountController extends Controller
 
   public function store(Request $request)
   {
-    try {
-      $response = AccountServices::store($request);
+    try{
+      $response = EntryServices::store($request);
 
       if($response instanceof \Illuminate\Http\JsonResponse) return $response;
 
       return response()->json([
         'success' => true,
-        'account' => new AccountResource($response),
+        'entry' => new EntryResource($response),
       ], 201);
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return response()->json([
         'success' => false,
         'message' => $e->getMessage(),
@@ -53,21 +50,20 @@ class AccountController extends Controller
 
   public function update(Request $request, $id)
   {
-    try {
-      $account = Account::find($id);
+    try{
+      $entry = Entry::find($id);
 
-      if(!$account) return ResponseHelper::notFound('Account not found.');
+      if(!$entry) return ResponseHelper::notFound('Entry not found.');
 
-      $response = AccountServices::update($request, $account);
+      $response = EntryServices::update($request, $entry);
 
       if($response instanceof \Illuminate\Http\JsonResponse) return $response;
 
       return response()->json([
         'success' => true,
-        'account' => new AccountResource($response),
+        'entry' => new EntryResource($response),
       ]);
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return response()->json([
         'success' => false,
         'message' => $e->getMessage(),
@@ -75,20 +71,19 @@ class AccountController extends Controller
     }
   }
 
-  public function destroy($id)
+  public function destroy(Request $request, $id)
   {
-    try {
-      $account = Account::find($id);
+    try{
+      $entry = Entry::find($id);
 
-      if(!$account) return ResponseHelper::notFound('Account not found.');
+      if(!$entry) return ResponseHelper::notFound('Entry not found.');
 
-      if(!AccountServices::delete($account)) throw new Exception('Account delete error.');
+      if(!EntryServices::delete($entry)) throw new Exception('Entry delete error.');
 
       return response()->json([
         'success' => true,
       ]);
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return response()->json([
         'success' => false,
         'message' => $e->getMessage(),

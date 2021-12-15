@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Testing\Fluent\AssertableJson;
 
 class TestHelper extends TestCase {
   private $headers = ['Accept' => 'application/json'];
@@ -39,5 +40,18 @@ class TestHelper extends TestCase {
     }
 
     return [$expected, $whereAllType];
+  }
+
+  protected function errorResponse($response, $code)
+  {
+    $response->assertStatus($code)
+      ->assertJson(fn (AssertableJson $json) =>
+        $json->whereAllType([
+          'success' => 'boolean',
+          'message' => 'string',
+          'fields' => 'array|null',
+          'errors' => 'array|null',
+        ])
+      );
   }
 }

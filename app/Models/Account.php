@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Entry;
 use App\Models\Group;
 use App\Models\Subgroup;
 use Illuminate\Database\Eloquent\Model;
@@ -26,5 +27,15 @@ class Account extends Model
   public function subgroup()
   {
     return $this->belongsTo(Subgroup::class);
+  }
+
+  public function debitEntries()
+  {
+    return $this->hasMany(Entry::class, 'debit_id');
+  }
+
+  public function creditEntries()
+  {
+    return $this->hasMany(Entry::class, 'credit_id');
   }
 }

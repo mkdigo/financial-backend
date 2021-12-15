@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subgroup;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
 use App\Http\Resources\SubgroupResource;
+use App\Repositories\SubgroupRepositoryInterface;
 
 class SubgroupController extends Controller
 {
+  private $repository;
+
+  public function __construct(SubgroupRepositoryInterface $repository)
+  {
+    $this->repository = $repository;
+  }
+
   public function index()
   {
     try {
-      $subgroups = Subgroup::get();
+      $subgroups = $this->repository->get();
 
       return response()->json([
         'success' => true,

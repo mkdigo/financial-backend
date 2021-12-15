@@ -2,26 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Group;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\GroupResource;
+use App\Repositories\GroupRepositoryInterface;
 
 class GroupController extends Controller
 {
-  public function index(Request $request)
+  private $repository;
+
+  public function __construct(GroupRepositoryInterface $repository)
+  {
+    $this->repository = $repository;
+  }
+
+  public function index()
   {
     try {
-      $groups = Group::get();
+      $groups = $this->repository->get();
 
       return response()->json([
         'success' => true,
         'groups' => GroupResource::collection($groups),
       ]);
-    } catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 }

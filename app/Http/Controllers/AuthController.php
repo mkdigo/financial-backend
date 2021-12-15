@@ -2,51 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use App\Helpers\ResponseHelper;
+use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use App\Repositories\AuthRepositoryInterface;
 
 class AuthController extends Controller
 {
-  public function login(Request $request)
+  private $repository;
+
+  public function __construct(AuthRepositoryInterface $repository)
+  {
+    $this->repository = $repository;
+  }
+
+  public function login()
   {
     try{
-      $credentials = $request->only('username', 'password');
-
-      $validator = Validator::make($credentials, [
-        'username' => 'required|string',
-        'password' => 'required|string',
-      ]);
-
-      if($validator->fails()) return ResponseHelper::validatorErrorsToMessage($validator);
-
-      $user = User::where([
-        ['username', $credentials['username']],
-        ['is_active', true],
-      ])->first();
-
-      if (! $user || ! Hash::check($credentials['password'], $user->password)) {
-        return response()->json([
-          'success' => false,
-          'message' => 'The provided credentials are incorrect.',
-        ], 401);
-      }
-
-      $user->tokens()->delete();
+      $user = $this->repository->login();
 
       return response()->json([
         'success' => true,
         'user' => new UserResource($user),
         'token' => $user->createToken('web')->plainTextToken
       ]);
-    } catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
@@ -59,11 +40,8 @@ class AuthController extends Controller
         'success' => true,
         'user' => new UserResource($user),
       ]);
-    } catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 
@@ -75,11 +53,8 @@ class AuthController extends Controller
       return response()->json([
         'success' => true,
       ]);
-    } catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 }

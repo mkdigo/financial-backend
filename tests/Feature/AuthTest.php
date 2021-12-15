@@ -36,6 +36,35 @@ class AuthTest extends TestHelper
       );
   }
 
+  public function test_login_incorrect_credential()
+  {
+    $user = User::factory()->create([
+      'username' => 'user',
+      'password' => Hash::make('123')
+    ]);
+
+    $data = [
+      'username' => 'user',
+      'password' => '1234',
+    ];
+
+    $response = $this->request('POST', '/api/login', $data);
+
+    $this->assertResponseError($response, 401);
+  }
+
+  public function test_login_bad_request()
+  {
+    $user = User::factory()->create([
+      'username' => 'user',
+      'password' => Hash::make('123')
+    ]);
+
+    $response = $this->request('POST', '/api/login', []);
+
+    $this->assertResponseError($response, 400);
+  }
+
   public function test_me()
   {
     $response = $this->authRequest('GET', '/api/me');
@@ -51,6 +80,13 @@ class AuthTest extends TestHelper
           'user.updated_at' => 'string',
         ])
       );
+  }
+
+  public function test_me_unauthenticated()
+  {
+    $response = $this->request('GET', '/api/me');
+
+    $response->assertStatus(401);
   }
 
   public function test_logout()

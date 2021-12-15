@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
 use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\UserResource;
 use App\Repositories\UserRepositoryInterface;

@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
-use Illuminate\Http\Request;
-use App\Helpers\ResponseHelper;
-use App\Services\AccountServices;
+// use Illuminate\Http\Request;
 use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\AccountResource;
 use App\Repositories\AccountRepositoryInterface;
@@ -19,7 +16,7 @@ class AccountController extends Controller
     $this->repository = $repository;
   }
 
-  public function index(Request $request)
+  public function index()
   {
     try {
       $response = $this->repository->get();
@@ -33,7 +30,7 @@ class AccountController extends Controller
     }
   }
 
-  public function store(Request $request)
+  public function store()
   {
     try {
       $response = $this->repository->store();
@@ -47,7 +44,7 @@ class AccountController extends Controller
     }
   }
 
-  public function update(Request $request, $id)
+  public function update($id)
   {
     try {
       $response = $this->repository->update((int) $id);

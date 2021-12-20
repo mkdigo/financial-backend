@@ -8,6 +8,7 @@ use App\Http\Controllers\EntryController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\SubgroupController;
+use App\Http\Controllers\BalanceSheetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,8 @@ Route::middleware('auth:sanctum')->group(function() {
 
   Route::get('/groups', [GroupController::class, 'index']);
   Route::get('/subgroups', [SubgroupController::class, 'index']);
+
+  Route::get('/balance', [BalanceSheetController::class, 'index']);
 
   Route::get('/accounts', [AccountController::class, 'index']);
   Route::post('/accounts', [AccountController::class, 'store']);

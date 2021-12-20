@@ -9,12 +9,14 @@ use App\Repositories\GroupRepository;
 use App\Repositories\AccountRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\SubgroupRepository;
+use App\Repositories\BalanceSheetRepository;
 use App\Repositories\AuthRepositoryInterface;
 use App\Repositories\UserRepositoryInterface;
 use App\Repositories\EntryRepositoryInterface;
 use App\Repositories\GroupRepositoryInterface;
 use App\Repositories\AccountRepositoryInterface;
 use App\Repositories\SubgroupRepositoryInterface;
+use App\Repositories\BalanceSheetRepositoryInterface;
 
 class RepositoriesServiceProvider extends ServiceProvider
 {
@@ -41,5 +43,6 @@ class RepositoriesServiceProvider extends ServiceProvider
     $this->app->bind(EntryRepositoryInterface::class, EntryRepository::class);
     $this->app->bind(GroupRepositoryInterface::class, GroupRepository::class);
     $this->app->bind(SubgroupRepositoryInterface::class, SubgroupRepository::class);
+    $this->app->bind(BalanceSheetRepositoryInterface::class, BalanceSheetRepository::class);
   }
 }

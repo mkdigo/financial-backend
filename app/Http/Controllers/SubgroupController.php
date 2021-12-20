@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 // use Illuminate\Http\Request;
+use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\SubgroupResource;
 use App\Repositories\SubgroupRepositoryInterface;
 
@@ -24,11 +25,8 @@ class SubgroupController extends Controller
         'success' => true,
         'subgroups' => SubgroupResource::collection($subgroups),
       ]);
-    } catch (Exception $e) {
-      return response()->json([
-        'success' => false,
-        'message' => $e->getMessage(),
-      ], 500);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
     }
   }
 }

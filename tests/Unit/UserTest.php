@@ -16,6 +16,6 @@ class UserTest extends TestHelperUnit
       'password',
     ];
 
-    $this->fillable(new User, $expected);
+    $this->assertFillable(new User, $expected);
   }
 }

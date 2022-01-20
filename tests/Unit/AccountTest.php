@@ -17,6 +17,6 @@ class AccountTest extends TestHelperUnit
       'description',
     ];
 
-    $this->fillable(new Account, $expected);
+    $this->assertFillable(new Account, $expected);
   }
 }

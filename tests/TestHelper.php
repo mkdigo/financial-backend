@@ -42,16 +42,18 @@ class TestHelper extends TestCase {
     return [$expected, $whereAllType];
   }
 
-  protected function assertResponseError($response, $code)
+  protected function assertResponseError($response, $code, $message = null)
   {
     $response->assertStatus($code)
-      ->assertJson(fn (AssertableJson $json) =>
+      ->assertJson(function (AssertableJson $json) use($message) {
+        $json->where('success', false);
+        if($message) $json->where('message', $message);
         $json->whereAllType([
           'success' => 'boolean',
           'message' => 'string',
           'fields' => 'array|null',
           'errors' => 'array|null',
-        ])
-      );
+        ]);
+      });
   }
 }

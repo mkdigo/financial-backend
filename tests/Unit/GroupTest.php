@@ -14,6 +14,6 @@ class GroupTest extends TestHelperUnit
       'description',
     ];
 
-    $this->fillable(new Group, $expected);
+    $this->assertFillable(new Group, $expected);
   }
 }

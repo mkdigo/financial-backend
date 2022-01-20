@@ -78,7 +78,7 @@ class AccountTest extends TestHelper
 
     $response = $this->authRequest('POST', '/api/accounts', $this->data);
 
-    $this->assertResponseError($response, 400);
+    $this->assertResponseError($response, 400, 'The name has already been taken.');
   }
 
   public function test_update()
@@ -103,7 +103,7 @@ class AccountTest extends TestHelper
 
     $response = $this->authRequest('PUT', '/api/accounts/1000', $this->data);
 
-    $this->assertResponseError($response, 404);
+    $this->assertResponseError($response, 404, 'Account not found.');
   }
 
   public function test_update_bad_request()
@@ -129,7 +129,7 @@ class AccountTest extends TestHelper
 
     $response = $this->authRequest('PUT', '/api/accounts/' . $account_1->id, $data);
 
-    $this->assertResponseError($response, 400);
+    $this->assertResponseError($response, 400, 'The name has already been taken.');
   }
 
   public function test_delete()
@@ -143,6 +143,6 @@ class AccountTest extends TestHelper
   {
     $response = $this->authRequest('DELETE', '/api/accounts/1000');
 
-    $this->assertResponseError($response, 404);
+    $this->assertResponseError($response, 404, 'Account not found.');
   }
 }

@@ -17,6 +17,6 @@ class EntryTest extends TestHelperUnit
       'note',
     ];
 
-    $this->fillable(new Entry, $expected);
+    $this->assertFillable(new Entry, $expected);
   }
 }

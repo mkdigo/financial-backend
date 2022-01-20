@@ -50,7 +50,7 @@ class AuthTest extends TestHelper
 
     $response = $this->request('POST', '/api/login', $data);
 
-    $this->assertResponseError($response, 401);
+    $this->assertResponseError($response, 401, 'The provided credentials are incorrect.');
   }
 
   public function test_login_bad_request()

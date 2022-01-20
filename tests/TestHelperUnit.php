@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Illuminate\Database\Eloquent\Model;
 
 class TestHelperUnit extends TestCase {
-  protected function fillable(Model $model, array $expected)
+  protected function assertFillable(Model $model, array $expected)
   {
     $comparedArray_1 = array_diff($expected, $model->getFillable());
     $comparedArray_2 = array_diff($model->getFillable(), $expected);

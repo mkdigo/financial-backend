@@ -20,6 +20,6 @@ class SubgroupTest extends TestHelperUnit
       'description',
     ];
 
-    $this->fillable(new Subgroup, $expected);
+    $this->assertFillable(new Subgroup, $expected);
   }
 }

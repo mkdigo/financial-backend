@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\SubgroupController;
 use App\Http\Controllers\BalanceSheetController;
 
@@ -41,6 +42,11 @@ Route::middleware('auth:sanctum')->group(function() {
   Route::post('/entries', [EntryController::class, 'store']);
   Route::put('/entries/{id}', [EntryController::class, 'update']);
   Route::delete('/entries/{id}', [EntryController::class, 'destroy']);
+
+  Route::get('/providers', [ProviderController::class, 'index']);
+  Route::post('/providers', [ProviderController::class, 'store']);
+  Route::put('/providers/{id}', [ProviderController::class, 'update']);
+  Route::delete('/providers/{id}', [ProviderController::class, 'destroy']);
 
   Route::get('/users', [UserController::class, 'index']);
   Route::post('/users', [UserController::class, 'store']);

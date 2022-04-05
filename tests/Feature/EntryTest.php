@@ -36,7 +36,13 @@ class EntryTest extends TestHelper
   {
     $this->seed(EntrySeeder::class);
 
-    $response = $this->authRequest('GET', '/api/entries');
+    $data = [
+      'search' => '',
+      'start' => '2000-01-01',
+      'end' => '2050-01-01',
+    ];
+
+    $response = $this->authRequest('GET', '/api/entries', $data);
 
     $response->assertStatus(200);
 

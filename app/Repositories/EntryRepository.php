@@ -40,10 +40,12 @@ class EntryRepository implements EntryRepositoryInterface
 
   public function get()
   {
-    $data = request()->only('search');
+    $data = request()->only('search', 'start', 'end');
 
     $rules = [
       'search' => 'nullable|string',
+      'start' => 'required|date',
+      'end' => 'required|date',
     ];
 
     $validator = Validator::make($data, $rules);
@@ -52,14 +54,18 @@ class EntryRepository implements EntryRepositoryInterface
 
     if(!isset($data['search'])) $data['search'] = '';
 
-    $entries = Entry::whereHas('debitAccount', function(Builder $query) use($data) {
-        return $query->where('name', 'like', "%". $data['search'] . "%");
+    $entries = Entry::
+      whereBetween('inclusion', [$data['start'], $data['end']])
+      ->where(function($query) use($data) {
+        $query->whereHas('debitAccount', function(Builder $query) use($data) {
+          return $query->where('name', 'like', "%". $data['search'] . "%");
+        })
+        ->orWhereHas('creditAccount', function(Builder $query) use($data) {
+          return $query->where('name', 'like', "%". $data['search'] . "%");
+        })
+        ->orWhere('note', 'like', '%'.$data['search'].'%')
+        ->orWhere('value', $data['search']);
       })
-      ->orWhereHas('creditAccount', function(Builder $query) use($data) {
-        return $query->where('name', 'like', "%". $data['search'] . "%");
-      })
-      ->orWhere('note', 'like', '%'.$data['search'].'%')
-      ->orWhere('value', $data['search'])
       ->orderBy('inclusion', 'desc')
       ->get();
 

@@ -70,4 +70,18 @@ class EntryController extends Controller
       return $this->errorHandler($e);
     }
   }
+
+  public function getExpenses()
+  {
+    try{
+      $response = $this->repository->getExpenses();
+
+      return response()->json([
+        'success' => true,
+        'entries' => EntryResource::collection($response),
+      ]);
+    } catch (ExceptionHandler $e) {
+      return $this->errorHandler($e);
+    }
+  }
 }

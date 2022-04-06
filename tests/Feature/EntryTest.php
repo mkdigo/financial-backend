@@ -56,6 +56,15 @@ class EntryTest extends TestHelper
     ]);
   }
 
+  public function test_list_bad_request()
+  {
+    $this->seed(EntrySeeder::class);
+
+    $response = $this->authRequest('GET', '/api/entries');
+
+    $this->assertResponseError($response, 400);
+  }
+
   public function test_store()
   {
     $response = $this->authRequest('POST', '/api/entries', $this->data);
@@ -127,5 +136,38 @@ class EntryTest extends TestHelper
     $response = $this->authRequest('DELETE', '/api/entries/10000');
 
     $this->assertResponseError($response, 404, 'Entry not found.');
+  }
+
+  public function test_list_expenses()
+  {
+    $this->seed(EntrySeeder::class);
+
+    $data = [
+      'search' => '',
+      'start' => '2000-01-01',
+      'end' => '2050-01-01',
+    ];
+
+    $response = $this->authRequest('GET', '/api/entries/expenses', $data);
+
+    $response->assertStatus(200);
+
+    [$expected] = $this->expected('entry', $this->types, $response->json()['entries'][0]);
+
+    $response->assertJsonStructure([
+      'success',
+      'entries' => [
+        '*' => $expected,
+      ],
+    ]);
+  }
+
+  public function test_list_expenses_bad_request()
+  {
+    $this->seed(EntrySeeder::class);
+
+    $response = $this->authRequest('GET', '/api/entries/expenses');
+
+    $this->assertResponseError($response, 400);
   }
 }

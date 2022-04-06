@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function() {
   Route::post('/entries', [EntryController::class, 'store']);
   Route::put('/entries/{id}', [EntryController::class, 'update']);
   Route::delete('/entries/{id}', [EntryController::class, 'destroy']);
+  Route::get('/entries/expenses', [EntryController::class, 'getExpenses']);
 
   Route::get('/providers', [ProviderController::class, 'index']);
   Route::post('/providers', [ProviderController::class, 'store']);

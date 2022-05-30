@@ -18,15 +18,10 @@ class GroupController extends Controller
 
   public function index()
   {
-    try {
-      $groups = $this->repository->get();
+    $groups = $this->repository->get();
 
-      return response()->json([
-        'success' => true,
-        'groups' => GroupResource::collection($groups),
-      ]);
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'groups' => GroupResource::collection($groups),
+    ]);
   }
 }

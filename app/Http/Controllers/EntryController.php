@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 // use Illuminate\Http\Request;
-use App\Exceptions\ExceptionHandler;
+use App\Models\Entry;
 use App\Http\Resources\EntryResource;
 use App\Repositories\EntryRepositoryInterface;
 
@@ -18,70 +18,44 @@ class EntryController extends Controller
 
   public function index()
   {
-    try{
-      $response = $this->repository->get();
+    $entries = $this->repository->get();
 
-      return response()->json([
-        'success' => true,
-        'entries' => EntryResource::collection($response),
-      ]);
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'entries' => EntryResource::collection($entries),
+    ]);
   }
 
   public function store()
   {
-    try{
-      $response = $this->repository->store();
+    $entry = $this->repository->store();
 
-      return response()->json([
-        'success' => true,
-        'entry' => new EntryResource($response),
-      ], 201);
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'entry' => new EntryResource($entry),
+    ], 201);
   }
 
-  public function update($id)
+  public function update(Entry $entry)
   {
-    try{
-      $response = $this->repository->update((int) $id);
+    $entry = $this->repository->update($entry);
 
-      return response()->json([
-        'success' => true,
-        'entry' => new EntryResource($response),
-      ]);
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'entry' => new EntryResource($entry),
+    ]);
   }
 
-  public function destroy($id)
+  public function destroy(Entry $entry)
   {
-    try{
-      $this->repository->delete((int) $id);
+    $this->repository->delete($entry);
 
-      return response()->json([
-        'success' => true,
-      ]);
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response();
   }
 
   public function getExpenses()
   {
-    try{
-      $response = $this->repository->getExpenses();
+    $entries = $this->repository->getExpenses();
 
-      return response()->json([
-        'success' => true,
-        'entries' => EntryResource::collection($response),
-      ]);
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'entries' => EntryResource::collection($entries),
+    ]);
   }
 }

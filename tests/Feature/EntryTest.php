@@ -108,7 +108,7 @@ class EntryTest extends TestHelper
 
     $response = $this->authRequest('PUT', '/api/entries/10000', $this->data);
 
-    $this->assertResponseError($response, 404, 'Entry not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 
   public function test_update_bad_request()
@@ -135,7 +135,7 @@ class EntryTest extends TestHelper
 
     $response = $this->authRequest('DELETE', '/api/entries/10000');
 
-    $this->assertResponseError($response, 404, 'Entry not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 
   public function test_list_expenses()

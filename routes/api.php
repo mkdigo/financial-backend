@@ -36,28 +36,28 @@ Route::middleware('auth:sanctum')->group(function() {
 
   Route::get('/accounts', [AccountController::class, 'index']);
   Route::post('/accounts', [AccountController::class, 'store']);
-  Route::put('/accounts/{id}', [AccountController::class, 'update']);
-  Route::delete('/accounts/{id}', [AccountController::class, 'destroy']);
+  Route::put('/accounts/{account}', [AccountController::class, 'update']);
+  Route::delete('/accounts/{account}', [AccountController::class, 'destroy']);
 
   Route::get('/entries', [EntryController::class, 'index']);
   Route::post('/entries', [EntryController::class, 'store']);
-  Route::put('/entries/{id}', [EntryController::class, 'update']);
-  Route::delete('/entries/{id}', [EntryController::class, 'destroy']);
+  Route::put('/entries/{entry}', [EntryController::class, 'update']);
+  Route::delete('/entries/{entry}', [EntryController::class, 'destroy']);
   Route::get('/entries/expenses', [EntryController::class, 'getExpenses']);
 
   Route::get('/providers', [ProviderController::class, 'index']);
   Route::post('/providers', [ProviderController::class, 'store']);
-  Route::put('/providers/{id}', [ProviderController::class, 'update']);
-  Route::delete('/providers/{id}', [ProviderController::class, 'destroy']);
+  Route::put('/providers/{provider}', [ProviderController::class, 'update']);
+  Route::delete('/providers/{provider}', [ProviderController::class, 'destroy']);
 
   Route::get('/products', [ProductController::class, 'index']);
   Route::post('/products', [ProductController::class, 'store']);
-  Route::put('/products/{id}', [ProductController::class, 'update']);
-  Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+  Route::put('/products/{product}', [ProductController::class, 'update']);
+  Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
   Route::get('/users', [UserController::class, 'index']);
   Route::post('/users', [UserController::class, 'store']);
-  Route::put('/users/{id}', [UserController::class, 'update']);
-  Route::put('/users/{id}/changepassword', [UserController::class, 'changePassword']);
-  Route::delete('/users/{id}', [UserController::class, 'destroy']);
+  Route::put('/users/{user}', [UserController::class, 'update']);
+  Route::put('/users/{user}/changepassword', [UserController::class, 'changePassword']);
+  Route::delete('/users/{user}', [UserController::class, 'destroy']);
 });

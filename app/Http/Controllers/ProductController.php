@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\ProductResource;
@@ -18,56 +19,35 @@ class ProductController extends Controller
 
   public function index()
   {
-    try {
-      $products = $this->repository->get();
+    $products = $this->repository->get();
 
-      return response()->json([
-        'success' => true,
-        'products' => ProductResource::collection($products),
-      ]);
-    } catch(ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'products' => ProductResource::collection($products),
+    ]);
   }
 
   public function store()
   {
-    try {
-      $product = $this->repository->store();
+    $product = $this->repository->store();
 
-      return response()->json([
-        'success' => true,
-        'product' => new ProductResource($product),
-      ]);
-    } catch(ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'product' => new ProductResource($product),
+    ]);
   }
 
-  public function update($id)
+  public function update(Product $product)
   {
-    try {
-      $product = $this->repository->update((int) $id);
+    $product = $this->repository->update($product);
 
-      return response()->json([
-        'success' => true,
-        'product' => new ProductResource($product),
-      ]);
-    } catch(ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'product' => new ProductResource($product),
+    ]);
   }
 
-  public function destroy($id)
+  public function destroy(Product $product)
   {
-    try {
-      $product = $this->repository->delete((int) $id);
+    $product = $this->repository->delete($product);
 
-      return response()->json([
-        'success' => true,
-      ]);
-    } catch(ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response();
   }
 }

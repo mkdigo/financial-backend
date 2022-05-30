@@ -30,11 +30,7 @@ class EntryRepository implements EntryRepositoryInterface
       'note' => 'nullable|string',
     ];
 
-    $validator = Validator::make($data, $rules);
-    if($validator->fails()) {
-      [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
-    }
+    Helper::validator($data, $rules);
 
     return $data;
   }
@@ -49,9 +45,7 @@ class EntryRepository implements EntryRepositoryInterface
       'end' => 'required|date',
     ];
 
-    $validator = Validator::make($data, $rules);
-
-    if($validator->fails()) throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400);
+    Helper::validator($data, $rules);
 
     if(!isset($data['search'])) $data['search'] = '';
 
@@ -82,12 +76,8 @@ class EntryRepository implements EntryRepositoryInterface
     return $entry;
   }
 
-  public function update(int $id)
+  public function update(Entry $entry)
   {
-    $entry = Entry::find($id);
-
-    if(!$entry) throw new ExceptionHandler('Entry not found.', 404);
-
     $data = $this->validator();
 
     $entry->update($data);
@@ -95,12 +85,8 @@ class EntryRepository implements EntryRepositoryInterface
     return $entry;
   }
 
-  public function delete(int $id)
+  public function delete(Entry $entry)
   {
-    $entry = Entry::find($id);
-
-    if(!$entry) throw new ExceptionHandler('Entry not found.', 404);
-
     $entry->delete();
 
     return true;
@@ -116,9 +102,7 @@ class EntryRepository implements EntryRepositoryInterface
       'end' => 'required|date',
     ];
 
-    $validator = Validator::make($data, $rules);
-
-    if($validator->fails()) throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400);
+    Helper::validator($data, $rules);
 
     if(!isset($data['search'])) $data['search'] = '';
 

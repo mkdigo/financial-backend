@@ -103,7 +103,7 @@ class AccountTest extends TestHelper
 
     $response = $this->authRequest('PUT', '/api/accounts/1000', $this->data);
 
-    $this->assertResponseError($response, 404, 'Account not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 
   public function test_update_bad_request()
@@ -143,6 +143,6 @@ class AccountTest extends TestHelper
   {
     $response = $this->authRequest('DELETE', '/api/accounts/1000');
 
-    $this->assertResponseError($response, 404, 'Account not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 }

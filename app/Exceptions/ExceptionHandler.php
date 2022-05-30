@@ -6,7 +6,6 @@ use Exception;
 use Throwable;
 
 class ExceptionHandler extends Exception {
-  private $test;
   private $fields;
   private $errors;
 

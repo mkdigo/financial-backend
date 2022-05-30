@@ -102,7 +102,7 @@ class UserTest extends TestHelper
   {
     $response = $this->authRequest('PUT', '/api/users/1000', []);
 
-    $this->assertResponseError($response, 404, 'User not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 
   public function test_delete()
@@ -119,7 +119,7 @@ class UserTest extends TestHelper
   {
     $response = $this->authRequest('DELETE', '/api/users/1000');
 
-    $this->assertResponseError($response, 404, 'User not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 
   public function test_change_password()
@@ -150,6 +150,6 @@ class UserTest extends TestHelper
   {
     $response = $this->authRequest('PUT', '/api/users/1000/changepassword', []);
 
-    $this->assertResponseError($response, 404, 'User not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 }

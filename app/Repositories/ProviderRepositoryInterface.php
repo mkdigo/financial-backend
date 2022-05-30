@@ -2,10 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Models\Provider;
+
 interface ProviderRepositoryInterface
 {
   public function get();
   public function store();
-  public function update(int $id);
-  public function delete(int $id);
+  public function update(Provider $provider);
+  public function delete(Provider $provider);
 }

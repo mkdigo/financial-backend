@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Provider;
 use Illuminate\Http\Request;
-use App\Exceptions\ExceptionHandler;
 use App\Http\Resources\ProviderResource;
 use App\Repositories\ProviderRepositoryInterface;
 
@@ -18,56 +18,35 @@ class ProviderController extends Controller
 
   public function index()
   {
-    try {
-      $providers = $this->repository->get();
+    $providers = $this->repository->get();
 
-      return response()->json([
-        'success' => true,
-        'providers' => ProviderResource::collection($providers),
-      ]);
-    } catch(ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'providers' => ProviderResource::collection($providers),
+    ]);
   }
 
   public function store()
   {
-    try {
-      $provider = $this->repository->store();
+    $provider = $this->repository->store();
 
-      return response()->json([
-        'success' => true,
-        'provider' => new ProviderResource($provider),
-      ], 201);
-    } catch(ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'provider' => new ProviderResource($provider),
+    ], 201);
   }
 
-  public function update($id)
+  public function update(Provider $provider)
   {
-    try {
-      $provider = $this->repository->update((int) $id);
+    $provider = $this->repository->update($provider);
 
-      return response()->json([
-        'success' => true,
-        'provider' => new ProviderResource($provider),
-      ]);
-    } catch(ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'provider' => new ProviderResource($provider),
+    ]);
   }
 
-  public function destroy($id)
+  public function destroy(Provider $provider)
   {
-    try {
-      $this->repository->delete((int) $id);
+    $this->repository->delete($provider);
 
-      return response()->json([
-        'success' => true,
-      ]);
-    } catch(ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response();
   }
 }

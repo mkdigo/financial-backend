@@ -6,12 +6,11 @@ use App\Helpers\Helper;
 use App\Models\Account;
 use Illuminate\Validation\Rule;
 use App\Exceptions\ExceptionHandler;
-use Illuminate\Support\Facades\Validator;
 use App\Repositories\AccountRepositoryInterface;
 
 class AccountRepository implements AccountRepositoryInterface
 {
-  private function validator($accountId = null)
+  private function validator(Account $account = null)
   {
     $data = request()->only(
       'group_id',
@@ -26,17 +25,13 @@ class AccountRepository implements AccountRepositoryInterface
       'description' => 'nullable|string'
     ];
 
-    if($accountId) {
-      $rules['name'] = Rule::unique('accounts')->ignore($accountId);
+    if($account) {
+      $rules['name'] = Rule::unique('accounts')->ignore($account->id);
     } else {
       $rules['name'] = 'required|string|unique:accounts,name';
     }
 
-    $validator = Validator::make($data, $rules);
-    if($validator->fails()) {
-      [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
-    }
+    Helper::validator($data, $rules);
 
     return $data;
   }
@@ -51,12 +46,7 @@ class AccountRepository implements AccountRepositoryInterface
       'search' => 'nullable|string',
     ];
 
-    $validator = Validator::make($data, $rules);
-
-    if($validator->fails()) {
-      [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
-    }
+    Helper::validator($data, $rules);
 
     $accounts = Account::when(isset($data['search']), fn ($query) =>
       $query->where('name', 'like', '%'.$data['search'].'%')
@@ -78,25 +68,17 @@ class AccountRepository implements AccountRepositoryInterface
     return $account;
   }
 
-  public function update(int $id)
+  public function update(Account $account)
   {
-    $account = Account::find($id);
-
-    if(!$account) throw new ExceptionHandler('Account not found.', 404);
-
-    $data = $this->validator($account->id);
+    $data = $this->validator($account);
 
     $account->update($data);
 
     return $account;
   }
 
-  public function delete(int $id)
+  public function delete(Account $account)
   {
-    $account = Account::find($id);
-
-    if(!$account) throw new ExceptionHandler('Account not found.', 404);
-
     $account->delete();
 
     return true;

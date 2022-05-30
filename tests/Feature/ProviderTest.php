@@ -118,7 +118,7 @@ class ProviderTest extends TestHelper
 
     $response = $this->authRequest('PUT', '/api/providers/10000', $this->data);
 
-    $this->assertResponseError($response, 404, 'Provider not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 
   public function test_delete()
@@ -136,6 +136,6 @@ class ProviderTest extends TestHelper
 
     $response = $this->authRequest('DELETE', '/api/providers/10000');
 
-    $this->assertResponseError($response, 404, 'Provider not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 }

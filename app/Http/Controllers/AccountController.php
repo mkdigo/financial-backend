@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 // use Illuminate\Http\Request;
-use App\Exceptions\ExceptionHandler;
+use App\Models\Account;
 use App\Http\Resources\AccountResource;
 use App\Repositories\AccountRepositoryInterface;
 
@@ -18,57 +18,35 @@ class AccountController extends Controller
 
   public function index()
   {
-    try {
-      $response = $this->repository->get();
+    $response = $this->repository->get();
 
-      return response()->json([
-        'success' => true,
-        'accounts' => AccountResource::collection($response),
-      ]);
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'accounts' => AccountResource::collection($response),
+    ]);
   }
 
   public function store()
   {
-    try {
-      $response = $this->repository->store();
+    $response = $this->repository->store();
 
-      return response()->json([
-        'success' => true,
-        'account' => new AccountResource($response),
-      ], 201);
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'account' => new AccountResource($response),
+    ], 201);
   }
 
-  public function update($id)
+  public function update(Account $account)
   {
-    try {
-      $response = $this->repository->update((int) $id);
+    $account = $this->repository->update($account);
 
-      return response()->json([
-        'success' => true,
-        'account' => new AccountResource($response),
-      ]);
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'account' => new AccountResource($account),
+    ]);
   }
 
-  public function destroy($id)
+  public function destroy(Account $account)
   {
-    try {
-      $this->repository->delete((int) $id);
+    $this->repository->delete($account);
 
-      return response()->json([
-        'success' => true,
-      ]);
-    }
-    catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response();
   }
 }

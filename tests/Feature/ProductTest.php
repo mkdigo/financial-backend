@@ -114,7 +114,7 @@ class ProductTest extends TestHelper
 
     $response = $this->authRequest('PUT', 'api/products/10000', $this->data);
 
-    $this->assertResponseError($response, 404, 'Product not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 
   public function test_update_bad_request()
@@ -141,6 +141,6 @@ class ProductTest extends TestHelper
 
     $response = $this->authRequest('DELETE', 'api/products/10000');
 
-    $this->assertResponseError($response, 404, 'Product not found.');
+    $this->assertResponseError($response, 404, 'Record not found.');
   }
 }

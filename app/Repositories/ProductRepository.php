@@ -33,12 +33,7 @@ class ProductRepository implements ProductRepositoryInterface
       ];
     }
 
-    $validator = Validator::make($data, $rules);
-
-    if($validator->fails()) {
-      [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
-    }
+    Helper::validator($data, $rules);
 
     return $data;
   }
@@ -54,12 +49,7 @@ class ProductRepository implements ProductRepositoryInterface
       'price' => 'nullable|integer',
     ];
 
-    $validator = Validator::make($data, $rules);
-
-    if($validator->fails()) {
-      [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
-    }
+    Helper::validator($data, $rules);
 
     $products = Product::where(function($query) {
       $query->where('name', 'like', "%". request()->search ."%")
@@ -92,12 +82,8 @@ class ProductRepository implements ProductRepositoryInterface
     return $product;
   }
 
-  public function update(int $id)
+  public function update(Product $product)
   {
-    $product = Product::find($id);
-
-    if(!$product) throw new ExceptionHandler('Product not found.', 404);
-
     $data = $this->validator($product);
 
     $product->update($data);
@@ -106,12 +92,8 @@ class ProductRepository implements ProductRepositoryInterface
     return $product;
   }
 
-  public function delete(int $id)
+  public function delete(Product $product)
   {
-    $product = Product::find($id);
-
-    if(!$product) throw new ExceptionHandler('Product not found.', 404);
-
     $product->delete();
 
     return true;

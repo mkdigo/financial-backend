@@ -6,7 +6,6 @@ use App\Models\Entry;
 use App\Helpers\Helper;
 use App\Models\Account;
 use App\Exceptions\ExceptionHandler;
-use Illuminate\Support\Facades\Validator;
 use App\Repositories\BalanceSheetRepositoryInterface;
 
 class BalanceSheetRepository implements BalanceSheetRepositoryInterface
@@ -15,12 +14,12 @@ class BalanceSheetRepository implements BalanceSheetRepositoryInterface
   {
     $params = request()->only('year', 'month');
 
-    $validator = Validator::make($params, [
+    $rules = [
       "year" => "required|string|digits:4",
       "month" => "required|string|digits:2"
-    ]);
+    ];
 
-    if($validator->fails()) throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400);
+    Helper::validator($params, $rules);
 
     $date = date("Y-m-t", strtotime($params['year'] . "-" . $params['month'] . "-01"));
 

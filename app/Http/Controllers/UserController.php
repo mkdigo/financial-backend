@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 // use Illuminate\Http\Request;
-use App\Exceptions\ExceptionHandler;
+use App\Models\User;
 use App\Http\Resources\UserResource;
 use App\Repositories\UserRepositoryInterface;
 
@@ -18,74 +18,42 @@ class UserController extends Controller
 
   public function index()
   {
-    try {
-      $response = $this->repository->get();
+    $response = $this->repository->get();
 
-      return response()->json([
-        'success' => true,
-        'users' => UserResource::collection($response),
-      ]);
-
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'users' => UserResource::collection($response),
+    ]);
   }
 
   public function store()
   {
-    try {
-      $response = $this->repository->create();
+    $response = $this->repository->create();
 
-      return response()->json([
-        'success' => true,
-        'user' => new UserResource($response),
-      ], 201);
-
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'user' => new UserResource($response),
+    ], 201);
   }
 
-  public function update($id)
+  public function update(User $user)
   {
-    try {
-      $response = $this->repository->update((int)$id);
+    $response = $this->repository->update($user);
 
-      return response()->json([
-        'success' => true,
-        'user' => new UserResource($response)
-      ]);
-
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response([
+      'user' => new UserResource($response)
+    ]);
   }
 
-  public function changePassword($id)
+  public function changePassword(User $user)
   {
-    try {
-      $response = $this->repository->changePassword((int)$id);
+    $response = $this->repository->changePassword($user);
 
-      return response()->json([
-        'success' => true,
-      ]);
-
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response();
   }
 
-  public function destroy($id)
+  public function destroy(User $user)
   {
-    try {
-      $this->repository->delete((int)$id);
+    $this->repository->delete($user);
 
-      return response()->json([
-        'success' => true,
-      ]);
-
-    } catch (ExceptionHandler $e) {
-      return $this->errorHandler($e);
-    }
+    return $this->response();
   }
 }

@@ -48,11 +48,7 @@ class UserRepository implements UserRepositoryInterface
       ];
     }
 
-    $validator = Validator::make($data, $rules);
-    if($validator->fails()) {
-      [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
-    }
+    Helper::validator($data, $rules);
 
     if(!$user) $data['password'] = Hash::make($data['password']);
 
@@ -75,22 +71,16 @@ class UserRepository implements UserRepositoryInterface
     return $user;
   }
 
-  public function update(int $id)
+  public function update(User $user)
   {
-    $user = User::find($id);
-    if(!$user) throw new ExceptionHandler('User not found.', 404);
-
     $data = $this->validator($user);
     $user->update($data);
 
     return $user;
   }
 
-  public function changePassword(int $id)
+  public function changePassword(User $user)
   {
-    $user = User::find($id);
-    if(!$user) throw new ExceptionHandler('User not found.', 404);
-
     $validateData = request()->only('password', 'password_confirmation');
 
     $rules = [
@@ -98,11 +88,7 @@ class UserRepository implements UserRepositoryInterface
       'password_confirmation' => 'required|same:password',
     ];
 
-    $validator = Validator::make($validateData, $rules);
-    if($validator->fails()) {
-      [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
-    }
+    Helper::validator($validateData, $rules);
 
     $data['password'] = Hash::make($validateData['password']);
 
@@ -111,11 +97,8 @@ class UserRepository implements UserRepositoryInterface
     return $user;
   }
 
-  public function delete(int $id)
+  public function delete(User $user)
   {
-    $user = User::find($id);
-    if(!$user) throw new ExceptionHandler('User not found.', 404);
-
     $user->delete();
 
     return true;

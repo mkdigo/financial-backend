@@ -34,12 +34,7 @@ class ProviderRepository implements ProviderRepositoryInterface
       'note' => 'nullable|string',
     ];
 
-    $validator = Validator::make($data, $rules);
-
-    if($validator->fails()) {
-      [$fields, $errors] = Helper::validatorErrors($validator);
-      throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400, $fields, $errors);
-    }
+    Helper::validator($data, $rules);
 
     return $data;
   }
@@ -52,9 +47,7 @@ class ProviderRepository implements ProviderRepositoryInterface
       'search' => 'nullable|string|max:191',
     ];
 
-    $validator = Validator::make($params, $rules);
-
-    if($validator->fails()) throw new ExceptionHandler(Helper::validatorErrorsToMessage($validator), 400);
+    Helper::validator($params, $rules);
 
     $providers = Provider::where('name', 'like', "%". request()->search ."%")
       ->orWhere('phone', 'like', "%". request()->search ."%")
@@ -76,12 +69,8 @@ class ProviderRepository implements ProviderRepositoryInterface
     return $provider;
   }
 
-  public function update(int $id)
+  public function update(Provider $provider)
   {
-    $provider = Provider::find($id);
-
-    if(!$provider) throw new ExceptionHandler('Provider not found.', 404);
-
     $data = $this->validator();
 
     $provider->update($data);
@@ -89,12 +78,8 @@ class ProviderRepository implements ProviderRepositoryInterface
     return $provider;
   }
 
-  public function delete(int $id)
+  public function delete(Provider $provider)
   {
-    $provider = Provider::find($id);
-
-    if(!$provider) throw new ExceptionHandler('Provider not found.', 404);
-
     $provider->delete();
 
     return true;

@@ -12,13 +12,10 @@ class Controller extends BaseController
 {
   use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-  protected function errorHandler(ExceptionHandler $e)
+  protected function response(array $data = [], int $code = 200)
   {
-    return response()->json([
-      'success' => false,
-      'message' => $e->getMessage(),
-      'fields' => $e->getFields(),
-      'errors' => $e->getErrors(),
-    ], $e->getCode());
+    $data = array_merge(['success' => true], $data);
+
+    return response()->json($data, $code);
   }
 }

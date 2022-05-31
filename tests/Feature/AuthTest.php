@@ -12,6 +12,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AuthTest extends TestHelper
 {
+  private $userTypes = [
+    'id' => 'integer',
+    'name' => 'string',
+    'email' => 'string',
+    'username' => 'string',
+    'created_at' => 'string',
+    'updated_at' => 'string',
+  ];
+
   public function test_login()
   {
     $user = User::factory()->create([
@@ -24,15 +33,19 @@ class AuthTest extends TestHelper
       'password' => '123',
     ];
 
-    $response = $this->request('POST', '/api/login', $data);
+    $response = $this->request([
+      'method' => 'POST',
+      'url' => '/login',
+      'data' => $data]
+    );
 
     $response->assertStatus(200)
       ->assertJson(fn (AssertableJson $json) =>
-        $json->whereAllType([
-          'success' => 'boolean',
-          'token' => 'string',
-          'user' => 'array',
-        ])
+        $json->where('success', true)
+          ->whereType('token', 'string')
+          ->has('user', fn($json) =>
+            $json->whereAllType($this->userTypes)
+          )
       );
   }
 
@@ -48,7 +61,11 @@ class AuthTest extends TestHelper
       'password' => '1234',
     ];
 
-    $response = $this->request('POST', '/api/login', $data);
+    $response = $this->request([
+      'method' => 'POST',
+      'url' => '/login',
+      'data' => $data
+    ]);
 
     $this->assertResponseError($response, 401, 'The provided credentials are incorrect.');
   }
@@ -60,38 +77,46 @@ class AuthTest extends TestHelper
       'password' => Hash::make('123')
     ]);
 
-    $response = $this->request('POST', '/api/login', []);
+    $response = $this->request([
+      'method' => 'POST',
+      'url' => '/login',
+    ]);
 
     $this->assertResponseError($response, 400);
   }
 
   public function test_me()
   {
-    $response = $this->authRequest('GET', '/api/me');
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/me'
+    ]);
 
     $response->assertStatus(200)
       ->assertJson(fn (AssertableJson $json) =>
-        $json->whereAllType([
-          'success' => 'boolean',
-          'user' => 'array',
-          'user.name' => 'string',
-          'user.email' => 'string',
-          'user.created_at' => 'string',
-          'user.updated_at' => 'string',
-        ])
+        $json->where('success', true)
+          ->has('user', fn($json) =>
+            $json->whereAllType($this->userTypes)
+          )
       );
   }
 
   public function test_me_unauthenticated()
   {
-    $response = $this->request('GET', '/api/me');
+    $response = $this->request([
+      'method' => 'GET',
+      'url' => '/me'
+    ]);
 
     $response->assertStatus(401);
   }
 
   public function test_logout()
   {
-    $response = $this->authRequest('GET', 'api/logout');
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/logout'
+    ]);
 
     $response->assertStatus(200);
   }

@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler
     });
 
     $this->renderable(function (NotFoundHttpException $e, $request) {
-      return $this->response('Record not found.', 404);
+      return $this->response('Not found.', 404);
     });
 
     if(env('APP_DEBUG') === false) {

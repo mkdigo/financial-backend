@@ -5,41 +5,37 @@ namespace Tests;
 use Tests\TestCase;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Testing\TestResponse;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Testing\Fluent\AssertableJson;
 
 class TestHelper extends TestCase {
   private $headers = ['Accept' => 'application/json'];
 
-  protected function request($method, $url, $data = [])
+  protected function request(array $params = [])
   {
-    return $this->withHeaders($this->headers)->json($method, $url, $data);
+    if(!isset($params['method'])) $params['method'] = 'get';
+    if(!isset($params['url'])) $params['url'] = '';
+    if(!isset($params['data'])) $params['data'] = [];
+
+    $params['url'] = "/api" . $params['url'];
+
+    return $this->withHeaders($this->headers)->json($params['method'], $params['url'], $params['data']);
   }
 
-  protected function authRequest($method, $url, $data = [])
+  protected function authRequest(array $params = [])
   {
-    Sanctum::actingAs(User::factory()->create());
-    return $this->withHeaders($this->headers)->json($method, $url, $data);
-  }
+    if(!isset($params['method'])) $params['method'] = 'get';
+    if(!isset($params['url'])) $params['url'] = '';
+    if(!isset($params['data'])) $params['data'] = [];
+    if(!isset($params['user'])) $params['user'] = null;
 
-  protected function expected(string $name, array $types, array $array)
-  {
-    $expected = array_keys($types);
-    $array = array_keys($array);
+    $params['url'] = "/api" . $params['url'];
 
-    $comparedArray_1 = array_diff($expected, $array);
-    $comparedArray_2 = array_diff($array, $expected);
+    if($params['user']) Sanctum::actingAs($params['user']);
+    else Sanctum::actingAs(User::factory()->create());
 
-    $this->assertEquals(0, count($comparedArray_1));
-    $this->assertEquals(0, count($comparedArray_2));
-
-    $whereAllType = [];
-
-    foreach($types as $key => $value) {
-      $whereAllType[$name . '.' . $key] = $value;
-    }
-
-    return [$expected, $whereAllType];
+    return $this->withHeaders($this->headers)->json($params['method'], $params['url'], $params['data']);
   }
 
   protected function assertResponseError($response, $code, $message = null)

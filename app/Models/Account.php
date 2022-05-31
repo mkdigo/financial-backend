@@ -19,6 +19,11 @@ class Account extends Model
     'description',
   ];
 
+  protected $casts = [
+    'group_id' => 'integer',
+    'subgroup_id' => 'integer',
+  ];
+
   public function group()
   {
     return $this->belongsTo(Group::class);

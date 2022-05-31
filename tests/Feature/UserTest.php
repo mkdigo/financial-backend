@@ -31,18 +31,18 @@ class UserTest extends TestHelper
   {
     $this->seed(UserSeeder::class);
 
-    $response = $this->authRequest('GET', '/api/users');
-
-    $response->assertStatus(200);
-
-    [$expectedUser, $whereAllType] = $this->expected('user', $this->types, $response->json()['users'][0]);
-
-    $response->assertJsonStructure([
-      'success',
-      'users' => [
-        '*' => $expectedUser,
-      ],
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/users'
     ]);
+
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('users.0', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_create()
@@ -51,16 +51,19 @@ class UserTest extends TestHelper
     $data['password'] = 'Testing123';
     $data['password_confirmation'] = 'Testing123';
 
-    $response = $this->authRequest('POST', '/api/users', $data);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/users',
+      'data' => $data,
+    ]);
 
-    $response->assertStatus(201);
-
-    [$expectedUser, $whereAllType] = $this->expected('user', $this->types, $response->json()['user']);
-
-    $response->assertJson(fn (AssertableJson $json) =>
-      $json->whereType('success', 'boolean')
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(201)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('user', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_create_bad_request()
@@ -68,7 +71,11 @@ class UserTest extends TestHelper
     $data = $this->data;
     $data['password'] = "Testing123";
 
-    $response = $this->authRequest('POST', '/api/users', $data);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/users',
+      'data' => $data,
+    ]);
 
     $this->assertResponseError($response, 400);
   }
@@ -77,39 +84,51 @@ class UserTest extends TestHelper
   {
     $this->seed(UserSeeder::class);
 
-    $response = $this->authRequest('PUT', '/api/users/1', $this->data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/users/1',
+      'data' => $this->data,
+    ]);
 
-    $response->assertStatus(200);
-
-    [$expectedUser, $whereAllType] = $this->expected('user', $this->types, $response->json()['user']);
-
-    $response->assertJson(fn (AssertableJson $json) =>
-      $json->whereType('success', 'boolean')
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('user', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_update_bad_request()
   {
     $this->seed(UserSeeder::class);
 
-    $response = $this->authRequest('PUT', '/api/users/1', []);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/users/1',
+    ]);
 
     $this->assertResponseError($response, 400);
   }
 
   public function test_update_user_not_found()
   {
-    $response = $this->authRequest('PUT', '/api/users/1000', []);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/users/1000',
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 
   public function test_delete()
   {
     $this->seed(UserSeeder::class);
 
-    $response = $this->authRequest('DELETE', '/api/users/1');
+    $response = $this->authRequest([
+      'method' => 'DELETE',
+      'url' => '/users/1'
+    ]);
 
     $response->assertStatus(200)
       ->assertExactJson(['success' => true]);
@@ -117,9 +136,12 @@ class UserTest extends TestHelper
 
   public function test_delete_user_not_found()
   {
-    $response = $this->authRequest('DELETE', '/api/users/1000');
+    $response = $this->authRequest([
+      'method' => 'DELETE',
+      'url' => '/users/1000'
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 
   public function test_change_password()
@@ -131,7 +153,11 @@ class UserTest extends TestHelper
       'password_confirmation' => 'Testing123',
     ];
 
-    $response = $this->authRequest('PUT', '/api/users/1/changepassword', $data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/users/1/changepassword',
+      'data' => $data,
+    ]);
 
     $response->assertStatus(200)
       ->assertExactJson(['success' => true]);
@@ -141,15 +167,21 @@ class UserTest extends TestHelper
   {
     $this->seed(UserSeeder::class);
 
-    $response = $this->authRequest('PUT', '/api/users/1/changepassword', []);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/users/1/changepassword',
+    ]);
 
     $this->assertResponseError($response, 400);
   }
 
   public function test_change_password_user_not_found()
   {
-    $response = $this->authRequest('PUT', '/api/users/1000/changepassword', []);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/users/1000/changepassword',
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 }

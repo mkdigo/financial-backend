@@ -42,46 +42,56 @@ class EntryTest extends TestHelper
       'end' => '2050-01-01',
     ];
 
-    $response = $this->authRequest('GET', '/api/entries', $data);
-
-    $response->assertStatus(200);
-
-    [$expected] = $this->expected('entry', $this->types, $response->json()['entries'][0]);
-
-    $response->assertJsonStructure([
-      'success',
-      'entries' => [
-        '*' => $expected,
-      ],
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/entries',
+      'data' => $data
     ]);
+
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('entries.0', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_list_bad_request()
   {
     $this->seed(EntrySeeder::class);
 
-    $response = $this->authRequest('GET', '/api/entries');
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/entries'
+    ]);
 
     $this->assertResponseError($response, 400);
   }
 
   public function test_store()
   {
-    $response = $this->authRequest('POST', '/api/entries', $this->data);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/entries',
+      'data' => $this->data
+    ]);
 
-    $response->assertStatus(201);
-
-    [$expected, $whereAllType] = $this->expected('entry', $this->types, $response->json()['entry']);
-
-    $response->assertJson(fn (AssertableJson $json) =>
-      $json->whereType('success', 'boolean')
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(201)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('entry', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_store_bad_request()
   {
-    $response = $this->authRequest('POST', '/api/entries', []);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/entries',
+    ]);
 
     $this->assertResponseError($response, 400);
   }
@@ -90,32 +100,42 @@ class EntryTest extends TestHelper
   {
     $this->seed(EntrySeeder::class);
 
-    $response = $this->authRequest('PUT', '/api/entries/1', $this->data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/entries/1',
+      'data' => $this->data
+    ]);
 
-    $response->assertStatus(200);
-
-    [$expected, $whereAllType] = $this->expected('entry', $this->types, $response->json()['entry']);
-
-    $response->assertJson(fn (AssertableJson $json) =>
-      $json->whereType('success', 'boolean')
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('entry', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_update_not_found()
   {
     $this->seed(EntrySeeder::class);
 
-    $response = $this->authRequest('PUT', '/api/entries/10000', $this->data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/entries/10000',
+      'data' => $this->data
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 
   public function test_update_bad_request()
   {
     $this->seed(EntrySeeder::class);
 
-    $response = $this->authRequest('PUT', '/api/entries/1', []);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/entries/1'
+    ]);
 
     $this->assertResponseError($response, 400);
   }
@@ -124,7 +144,10 @@ class EntryTest extends TestHelper
   {
     $this->seed(EntrySeeder::class);
 
-    $response = $this->authRequest('DELETE', '/api/entries/1');
+    $response = $this->authRequest([
+      'method' => 'DELETE',
+      'url' => '/entries/1'
+    ]);
 
     $response->assertStatus(200);
   }
@@ -133,9 +156,12 @@ class EntryTest extends TestHelper
   {
     $this->seed(EntrySeeder::class);
 
-    $response = $this->authRequest('DELETE', '/api/entries/10000');
+    $response = $this->authRequest([
+      'method' => 'DELETE',
+      'url' => '/entries/10000'
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 
   public function test_list_expenses()
@@ -148,25 +174,31 @@ class EntryTest extends TestHelper
       'end' => '2050-01-01',
     ];
 
-    $response = $this->authRequest('GET', '/api/entries/expenses', $data);
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/entries/expenses',
+      'data' => $data
+    ]);
 
     $response->assertStatus(200);
 
-    [$expected] = $this->expected('entry', $this->types, $response->json()['entries'][0]);
-
-    $response->assertJsonStructure([
-      'success',
-      'entries' => [
-        '*' => $expected,
-      ],
-    ]);
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('entries.0', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_list_expenses_bad_request()
   {
     $this->seed(EntrySeeder::class);
 
-    $response = $this->authRequest('GET', '/api/entries/expenses');
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/entries/expenses'
+    ]);
 
     $this->assertResponseError($response, 400);
   }

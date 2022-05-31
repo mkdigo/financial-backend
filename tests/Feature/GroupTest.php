@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestHelper;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class GroupTest extends TestHelper
@@ -16,17 +17,17 @@ class GroupTest extends TestHelper
 
   public function test_list()
   {
-    $response = $this->authRequest('GET', 'api/groups');
-
-    $response->assertStatus(200);
-
-    [$expected] = $this->expected('group', $this->types, $response->json()['groups'][0]);
-
-    $response->assertJsonStructure([
-      'success',
-      'groups' => [
-        '*' => $expected
-      ],
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/groups'
     ]);
+
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('groups.0', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 }

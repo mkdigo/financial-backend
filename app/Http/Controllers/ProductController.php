@@ -32,7 +32,7 @@ class ProductController extends Controller
 
     return $this->response([
       'product' => new ProductResource($product),
-    ]);
+    ], 201);
   }
 
   public function update(Product $product)

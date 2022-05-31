@@ -15,7 +15,7 @@ class AccountTest extends TestHelper
     'group_id' => 'integer',
     'subgroup_id' => 'integer',
     'name' => 'string',
-    'description' => 'string',
+    'description' => 'string|null',
     'created_at' => 'string',
     'updated_at' => 'string',
     'group' => 'array',
@@ -37,37 +37,44 @@ class AccountTest extends TestHelper
       'search' => '',
     ];
 
-    $response = $this->authRequest('GET', '/api/accounts', $data);
-
-    $response->assertStatus(200);
-
-    [$expected] = $this->expected('account', $this->types, $response->json()['accounts'][0]);
-
-    $response->assertJsonStructure([
-      'success',
-      'accounts' => [
-        '*' => $expected,
-      ],
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/accounts',
+      'data' => $data,
     ]);
+
+    $response->assertStatus(200)
+      ->assertJson(fn (AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('accounts.0', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_store()
   {
-    $response = $this->authRequest('POST', '/api/accounts', $this->data);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/accounts',
+      'data' => $this->data
+    ]);
 
-    $response->assertStatus(201);
-
-    [$expected, $whereAllType] = $this->expected('account', $this->types, $response->json()['account']);
-
-    $response->assertJson(fn(AssertableJson $json) =>
-      $json->whereType('success', 'boolean')
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(201)
+      ->assertJson(fn (AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('account', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_store_bad_request()
   {
-    $response = $this->authRequest('POST', '/api/accounts', []);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/accounts',
+    ]);
 
     $this->assertResponseError($response, 400);
   }
@@ -76,7 +83,11 @@ class AccountTest extends TestHelper
   {
     Account::factory()->create(['name' => 'Test']);
 
-    $response = $this->authRequest('POST', '/api/accounts', $this->data);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/accounts',
+      'data' => $this->data
+    ]);
 
     $this->assertResponseError($response, 400, 'The name has already been taken.');
   }
@@ -85,32 +96,42 @@ class AccountTest extends TestHelper
   {
     $account = Account::factory()->create(['name' => 'Test']);
 
-    $response = $this->authRequest('PUT', '/api/accounts/' . $account->id, $this->data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => "/accounts/$account->id",
+      'data' => $this->data
+    ]);
 
-    $response->assertStatus(200);
-
-    [$expected, $whereAllType] = $this->expected('account', $this->types, $response->json()['account']);
-
-    $response->assertJson(fn(AssertableJson $json) =>
-      $json->whereType('success', 'boolean')
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(200)
+      ->assertJson(fn (AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('account', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_update_not_found()
   {
     $account = Account::factory()->create(['name' => 'Test']);
 
-    $response = $this->authRequest('PUT', '/api/accounts/1000', $this->data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/accounts/1000',
+      'data' => $this->data
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 
   public function test_update_bad_request()
   {
     $account = Account::factory()->create(['name' => 'Test']);
 
-    $response = $this->authRequest('PUT', '/api/accounts/' . $account->id, []);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => "/accounts/$account->id",
+    ]);
 
     $this->assertResponseError($response, 400);
   }
@@ -127,22 +148,32 @@ class AccountTest extends TestHelper
       'description' => 'Test',
     ];
 
-    $response = $this->authRequest('PUT', '/api/accounts/' . $account_1->id, $data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => "/accounts/$account_1->id",
+      'data' => $data
+    ]);
 
     $this->assertResponseError($response, 400, 'The name has already been taken.');
   }
 
   public function test_delete()
   {
-    $response = $this->authRequest('DELETE', '/api/accounts/1');
+    $response = $this->authRequest([
+      'method' => 'DELETE',
+      'url' => '/accounts/1'
+    ]);
 
     $response->assertStatus(200);
   }
 
   public function test_delete_not_found()
   {
-    $response = $this->authRequest('DELETE', '/api/accounts/1000');
+    $response = $this->authRequest([
+      'method' => 'DELETE',
+      'url' => '/accounts/1000'
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 }

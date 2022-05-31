@@ -41,18 +41,19 @@ class ProviderTest extends TestHelper
 
     $params = [];
 
-    $response = $this->authRequest('GET', '/api/providers', $params);
-
-    $response->assertStatus(200);
-
-    [$expected] = $this->expected('provider', $this->types, $response->json()['providers'][0]);
-
-    $response->assertJsonStructure([
-      'success',
-      'providers' => [
-        '*' => $expected,
-      ],
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/providers',
+      'data' => $params
     ]);
+
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('providers.0', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_get_bad_request()
@@ -61,28 +62,38 @@ class ProviderTest extends TestHelper
 
     $params = ['search' => 1];
 
-    $response = $this->authRequest('GET', '/api/providers', $params);
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/providers',
+      'data' => $params,
+    ]);
 
     $this->assertResponseError($response, 400);
   }
 
   public function test_store()
   {
-    $response = $this->authRequest('POST', '/api/providers', $this->data);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/providers',
+      'data' => $this->data,
+    ]);
 
-    $response->assertStatus(201);
-
-    [$expected, $whereAllType] = $this->expected('provider', $this->types, $response->json()['provider']);
-
-    $response->assertJson(fn (AssertableJson $json) =>
-      $json->whereType('success', 'boolean')
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(201)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('provider', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_store_bad_request()
   {
-    $response = $this->authRequest('POST', '/api/providers', []);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/providers',
+    ]);
 
     $this->assertResponseError($response, 400);
   }
@@ -91,23 +102,29 @@ class ProviderTest extends TestHelper
   {
     $this->seed(ProviderSeeder::class);
 
-    $response = $this->authRequest('PUT', '/api/providers/1', $this->data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/providers/1',
+      'data' => $this->data,
+    ]);
 
-    $response->assertStatus(200);
-
-    [$expected, $whereAllType] = $this->expected('provider', $this->types, $response->json()['provider']);
-
-    $response->assertJson(fn (AssertableJson $json) =>
-      $json->whereType('success', 'boolean')
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('provider', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_update_bad_request()
   {
     $this->seed(ProviderSeeder::class);
 
-    $response = $this->authRequest('PUT', '/api/providers/1', []);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/providers/1',
+    ]);
 
     $this->assertResponseError($response, 400);
   }
@@ -116,16 +133,23 @@ class ProviderTest extends TestHelper
   {
     $this->seed(ProviderSeeder::class);
 
-    $response = $this->authRequest('PUT', '/api/providers/10000', $this->data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/providers/10000',
+      'data' => $this->data,
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 
   public function test_delete()
   {
     $this->seed(ProviderSeeder::class);
 
-    $response = $this->authRequest('DELETE', '/api/providers/1');
+    $response = $this->authRequest([
+      'method' => 'DELETE',
+      'url' => '/providers/1'
+    ]);
 
     $response->assertStatus(200);
   }
@@ -134,8 +158,11 @@ class ProviderTest extends TestHelper
   {
     $this->seed(ProviderSeeder::class);
 
-    $response = $this->authRequest('DELETE', '/api/providers/10000');
+    $response = $this->authRequest([
+      'method' => 'DELETE',
+      'url' => '/providers/10000'
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 }

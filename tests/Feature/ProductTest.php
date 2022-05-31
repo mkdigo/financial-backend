@@ -6,6 +6,7 @@ use Tests\TestHelper;
 use Database\Seeders\ProductSeeder;
 use Database\Seeders\ProviderSeeder;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ProductTest extends TestHelper
@@ -39,18 +40,18 @@ class ProductTest extends TestHelper
   {
     $this->seed(ProductSeeder::class);
 
-    $response = $this->authRequest('GET', 'api/products');
-
-    $response->assertStatus(200);
-
-    [$expected] = $this->expected('products', $this->types, $response['products'][0]);
-
-    $response->assertJsonStructure([
-      'success',
-      'products' => [
-        '*' => $expected,
-      ],
+    $response = $this->authRequest([
+      'method' =>'GET',
+      'url' =>'/products'
     ]);
+
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('products.0', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_list_bad_request()
@@ -64,7 +65,11 @@ class ProductTest extends TestHelper
       'price' => 'test',
     ];
 
-    $response = $this->authRequest('GET', 'api/products', $data);
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/products',
+      'data' => $data,
+    ]);
 
     $this->assertResponseError($response, 400, 'The barcode must be an integer. The price must be an integer.');
   }
@@ -73,21 +78,27 @@ class ProductTest extends TestHelper
   {
     $this->seed(ProviderSeeder::class);
 
-    $response = $this->authRequest('POST', 'api/products', $this->data);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/products',
+      'data' => $this->data,
+    ]);
 
-    $response->assertStatus(200);
-
-    [$expected, $whereAllType] = $this->expected('product', $this->types, $response['product']);
-
-    $response->assertJson(fn($json) =>
-      $json->where('success', true)
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(201)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('product', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_store_bad_request()
   {
-    $response = $this->authRequest('POST', 'api/products', []);
+    $response = $this->authRequest([
+      'method' => 'POST',
+      'url' => '/products',
+    ]);
 
     $this->assertResponseError($response, 400);
   }
@@ -96,32 +107,42 @@ class ProductTest extends TestHelper
   {
     $this->seed(ProductSeeder::class);
 
-    $response = $this->authRequest('PUT', 'api/products/1', $this->data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/products/1',
+      'data' => $this->data
+    ]);
 
-    $response->assertStatus(200);
-
-    [$expected, $whereAllType] = $this->expected('product', $this->types, $response['product']);
-
-    $response->assertJson(fn($json) =>
-      $json->where('success', true)
-        ->whereAllType($whereAllType)
-    );
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('product', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
   }
 
   public function test_update_not_found()
   {
     $this->seed(ProductSeeder::class);
 
-    $response = $this->authRequest('PUT', 'api/products/10000', $this->data);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/products/10000',
+      'data' => $this->data,
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 
   public function test_update_bad_request()
   {
     $this->seed(ProductSeeder::class);
 
-    $response = $this->authRequest('PUT', 'api/products/1', []);
+    $response = $this->authRequest([
+      'method' => 'PUT',
+      'url' => '/products/1',
+    ]);
 
     $this->assertResponseError($response, 400);
   }
@@ -130,7 +151,10 @@ class ProductTest extends TestHelper
   {
     $this->seed(ProductSeeder::class);
 
-    $response = $this->authRequest('DELETE', 'api/products/1');
+    $response = $this->authRequest([
+      'method' =>'DELETE',
+      'url' =>'/products/1'
+    ]);
 
     $response->assertStatus(200);
   }
@@ -139,8 +163,11 @@ class ProductTest extends TestHelper
   {
     $this->seed(ProductSeeder::class);
 
-    $response = $this->authRequest('DELETE', 'api/products/10000');
+    $response = $this->authRequest([
+      'method' =>'DELETE',
+      'url' =>'/products/10000'
+    ]);
 
-    $this->assertResponseError($response, 404, 'Record not found.');
+    $this->assertResponseError($response, 404, 'Not found.');
   }
 }

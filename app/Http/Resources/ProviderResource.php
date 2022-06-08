@@ -20,6 +20,7 @@ class ProviderResource extends JsonResource
       'email' => $this->email,
       'phone' => $this->phone,
       'cellphone' => $this->cellphone,
+      'zipcode' => $this->zipcode,
       'state' => $this->state,
       'city' => $this->city,
       'address' => $this->address,

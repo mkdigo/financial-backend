@@ -82,6 +82,7 @@ class ProviderRepository implements ProviderRepositoryInterface
 
   public function delete(Provider $provider)
   {
+    if($provider->products()->count() > 0) throw new ExceptionHandler('You can\'t delete a provider when it has products.', 403);
     $provider->delete();
 
     return true;

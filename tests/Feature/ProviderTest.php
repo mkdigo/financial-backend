@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestHelper;
+use Database\Seeders\ProductSeeder;
 use Database\Seeders\ProviderSeeder;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -166,5 +167,17 @@ class ProviderTest extends TestHelper
     ]);
 
     $this->assertResponseError($response, 404, 'Not found.');
+  }
+
+  public function test_it_should_not_be_able_to_delete_a_provider_when_it_has_products()
+  {
+    $this->seed(ProductSeeder::class);
+
+    $response = $this->authRequest([
+      'method' => 'DELETE',
+      'url' => '/providers/1'
+    ]);
+
+    $this->assertResponseError($response, 403, 'You can\'t delete a provider when it has products.');
   }
 }

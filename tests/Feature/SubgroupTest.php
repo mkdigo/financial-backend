@@ -26,7 +26,7 @@ class SubgroupTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('subgroups.0', fn($json) =>
+          ->has('data.subgroups.0', fn($json) =>
             $json->whereAllType($this->types)
           )
       );

@@ -53,7 +53,7 @@ class ProviderTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('providers.0', fn($json) =>
+          ->has('data.providers.0', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -85,7 +85,7 @@ class ProviderTest extends TestHelper
     $response->assertStatus(201)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('provider', fn($json) =>
+          ->has('data.provider', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -114,7 +114,7 @@ class ProviderTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('provider', fn($json) =>
+          ->has('data.provider', fn($json) =>
             $json->whereAllType($this->types)
           )
       );

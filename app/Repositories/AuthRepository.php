@@ -28,7 +28,7 @@ class AuthRepository implements AuthRepositoryInterface
 
     if (! $user || ! Hash::check($credentials['password'], $user->password)) throw new ExceptionHandler('The provided credentials are incorrect.', 401);
 
-    $user->tokens()->delete();
+    // $user->tokens()->delete();
 
     return $user;
   }

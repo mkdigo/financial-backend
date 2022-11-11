@@ -12,10 +12,11 @@ class Controller extends BaseController
 {
   use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-  protected function response(array $data = [], int $code = 200)
+  protected function response($data = null, int $code = 200)
   {
-    $data = array_merge(['success' => true], $data);
-
-    return response()->json($data, $code);
+    return response()->json([
+      'success' => true,
+      'data' => $data,
+    ], $code);
   }
 }

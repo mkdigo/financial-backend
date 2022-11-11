@@ -48,7 +48,7 @@ class ProductTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('products.0', fn($json) =>
+          ->has('data.products.0', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -87,7 +87,7 @@ class ProductTest extends TestHelper
     $response->assertStatus(201)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('product', fn($json) =>
+          ->has('data.product', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -116,7 +116,7 @@ class ProductTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('product', fn($json) =>
+          ->has('data.product', fn($json) =>
             $json->whereAllType($this->types)
           )
       );

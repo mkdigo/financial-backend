@@ -18,8 +18,6 @@ class BalanceSheetController extends Controller
   {
     $response = $this->repository->get();
 
-    return $this->response([
-      'data' => $response,
-    ]);
+    return $this->response($response);
   }
 }

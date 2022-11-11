@@ -42,8 +42,8 @@ class AuthTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn (AssertableJson $json) =>
         $json->where('success', true)
-          ->whereType('token', 'string')
-          ->has('user', fn($json) =>
+          ->whereType('data.token', 'string')
+          ->has('data.user', fn($json) =>
             $json->whereAllType($this->userTypes)
           )
       );
@@ -95,7 +95,7 @@ class AuthTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn (AssertableJson $json) =>
         $json->where('success', true)
-          ->has('user', fn($json) =>
+          ->has('data.user', fn($json) =>
             $json->whereAllType($this->userTypes)
           )
       );

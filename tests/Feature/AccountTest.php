@@ -46,7 +46,7 @@ class AccountTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn (AssertableJson $json) =>
         $json->where('success', true)
-          ->has('accounts.0', fn($json) =>
+          ->has('data.accounts.0', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -63,7 +63,7 @@ class AccountTest extends TestHelper
     $response->assertStatus(201)
       ->assertJson(fn (AssertableJson $json) =>
         $json->where('success', true)
-          ->has('account', fn($json) =>
+          ->has('data.account', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -105,7 +105,7 @@ class AccountTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn (AssertableJson $json) =>
         $json->where('success', true)
-          ->has('account', fn($json) =>
+          ->has('data.account', fn($json) =>
             $json->whereAllType($this->types)
           )
       );

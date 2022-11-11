@@ -20,7 +20,6 @@ class AuthController extends Controller
     $user = $this->repository->login();
 
     return $this->response([
-      'success' => true,
       'user' => new UserResource($user),
       'token' => $user->createToken('web')->plainTextToken
     ]);
@@ -37,7 +36,7 @@ class AuthController extends Controller
 
   public function logout(Request $request)
   {
-    $test = $request->user()->tokens()->delete();
+    $request->user()->tokens()->delete();
 
     return $this->response();
   }

@@ -51,7 +51,7 @@ class EntryTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('entries.0', fn($json) =>
+          ->has('data.entries.0', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -80,7 +80,7 @@ class EntryTest extends TestHelper
     $response->assertStatus(201)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('entry', fn($json) =>
+          ->has('data.entry', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -109,7 +109,7 @@ class EntryTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('entry', fn($json) =>
+          ->has('data.entry', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -185,7 +185,7 @@ class EntryTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('entries.0', fn($json) =>
+          ->has('data.entries.0', fn($json) =>
             $json->whereAllType($this->types)
           )
       );

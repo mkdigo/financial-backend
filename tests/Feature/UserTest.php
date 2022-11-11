@@ -39,7 +39,7 @@ class UserTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('users.0', fn($json) =>
+          ->has('data.users.0', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -60,7 +60,7 @@ class UserTest extends TestHelper
     $response->assertStatus(201)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('user', fn($json) =>
+          ->has('data.user', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -93,7 +93,7 @@ class UserTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('user', fn($json) =>
+          ->has('data.user', fn($json) =>
             $json->whereAllType($this->types)
           )
       );
@@ -131,7 +131,10 @@ class UserTest extends TestHelper
     ]);
 
     $response->assertStatus(200)
-      ->assertExactJson(['success' => true]);
+      ->assertExactJson([
+        'success' => true,
+        'data' => null
+      ]);
   }
 
   public function test_delete_user_not_found()
@@ -160,7 +163,10 @@ class UserTest extends TestHelper
     ]);
 
     $response->assertStatus(200)
-      ->assertExactJson(['success' => true]);
+      ->assertExactJson([
+        'success' => true,
+        'data' => null
+      ]);
   }
 
   public function test_change_password_bad_request()

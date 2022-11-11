@@ -25,7 +25,7 @@ class GroupTest extends TestHelper
     $response->assertStatus(200)
       ->assertJson(fn(AssertableJson $json) =>
         $json->where('success', true)
-          ->has('groups.0', fn($json) =>
+          ->has('data.groups.0', fn($json) =>
             $json->whereAllType($this->types)
           )
       );

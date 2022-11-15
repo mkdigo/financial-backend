@@ -74,6 +74,36 @@ class ProductTest extends TestHelper
     $this->assertResponseError($response, 400, 'The barcode must be an integer. The price must be an integer.');
   }
 
+  public function test_show()
+  {
+    $this->seed(ProductSeeder::class);
+
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/products/1',
+    ]);
+
+    $response->assertStatus(200)
+      ->assertJson(fn(AssertableJson $json) =>
+        $json->where('success', true)
+          ->has('data.product', fn($json) =>
+            $json->whereAllType($this->types)
+          )
+      );
+  }
+
+  public function test_show_not_found()
+  {
+    $this->seed(ProductSeeder::class);
+
+    $response = $this->authRequest([
+      'method' => 'GET',
+      'url' => '/products/100000',
+    ]);
+
+    $this->assertResponseError($response, 404);
+  }
+
   public function test_store()
   {
     $this->seed(ProviderSeeder::class);

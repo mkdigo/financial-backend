@@ -16,7 +16,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     $rules = [
       'provider_id' => 'required|integer|exists:providers,id',
-      'barcode' => 'nullable|integer|unique:products',
+      'barcode' => 'nullable|string|unique:products',
       'ref' => 'nullable|string|max:191',
       'name' => 'required|string|max:191',
       'description' => 'nullable|string',

@@ -26,6 +26,13 @@ class ProductController extends Controller
     ]);
   }
 
+  public function show(Product $product)
+  {
+    return $this->response([
+      'product' => new ProductResource($product),
+    ]);
+  }
+
   public function store()
   {
     $product = $this->repository->store();
